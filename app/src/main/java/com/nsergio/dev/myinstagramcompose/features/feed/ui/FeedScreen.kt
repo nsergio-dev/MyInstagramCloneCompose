@@ -16,15 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
-import kotlin.random.Random
+import com.nsergio.dev.myinstagramcompose.features.feed.presentation.FeedViewModel
 
 @Composable
-fun FeedScreen() {
+fun FeedScreen(
+    viewModel: FeedViewModel = hiltViewModel()
+) {
+    val posts: LazyPagingItems<Post> = viewModel.posts.collectAsLazyPagingItems()
 
-    val posts = getMockPosts(100)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -40,10 +45,10 @@ fun FeedScreen() {
 
 @Composable
 private fun Posts(
-    posts: List<Post>
+    posts: LazyPagingItems<Post>
 ) {
     LazyColumn {
-        items(posts.size) { index ->
+        items(posts.itemCount) { index ->
             posts[index]?.let { ImagePost(it) }
         }
     }
@@ -76,29 +81,3 @@ private fun ImagePost(post: Post) {
         )
     }
 }
-
-private fun getMockPosts(
-    size: Int
-): List<Post> = List(size) { index ->
-    val id = "${size * size + index}"
-    val randomForCaption = Random.nextBoolean()
-    val lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut dignissim est. Proin ut nisi ut lacus volutpat mollis quis a odio. Donec et tellus feugiat, efficitur urna ultrices, mattis orci. Nunc augue felis, viverra eget sagittis vel, tristique at lacus."
-    val caption = if (randomForCaption) " $lorem" else ""
-
-    Post(
-        id = id,
-        authorName = "user_$id",
-        authorAvatar = "https://i.pravatar.cc/150?u=$id",
-        imageUrl = "https://picsum.photos/seed/$id/600/600",
-        caption = "Awesome photo #$id$caption",
-        likes = Random.nextInt(1, 1_000),
-        comments = Random.nextInt(1, 1_000),
-        shares = Random.nextInt(1, 1_000),     // ahora menos…
-        Random.nextLong(MILLIS_IN_HOUR,        // ≥ 1 h
-            7 * MILLIS_IN_DAY + 1)
-
-    )
-}
-private val MILLIS_IN_MIN  = 60_000L
-private val MILLIS_IN_HOUR = 60 * MILLIS_IN_MIN        // 3_600_000
-private val MILLIS_IN_DAY  = 24 * MILLIS_IN_HOUR
