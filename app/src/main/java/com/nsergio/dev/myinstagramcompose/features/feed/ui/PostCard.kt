@@ -12,15 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -45,10 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import coil.compose.AsyncImage
-import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
+import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
 import com.nsergio.dev.myinstagramcompose.core.ui.components.LikeButton
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
+import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
 import kotlinx.coroutines.delay
 
@@ -57,12 +55,17 @@ import kotlinx.coroutines.delay
  * @param post Post to display
  */
 @Composable
-fun PostCard(post: Post, onLikeToggle: (String) -> Unit) {
+fun PostCard(
+    post: Post,
+    onLikeToggle: (String) -> Unit,
+    onProfileClick: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
 
         UserImage(
             authorName = post.authorName,
-            imageUrl = post.authorAvatar
+            imageUrl = post.authorAvatar,
+            onClick = onProfileClick
         )
 
         PostImage(
@@ -152,17 +155,12 @@ private fun BoxScope.HeartAnimationPost(showHeart: Boolean) {
 @Composable
 private fun UserImage(
     authorName: String,
-    imageUrl: String
+    imageUrl: String,
+    onClick: () -> Unit
 ) {
     Row(modifier = Modifier.padding(DimensDP.DP12.dp)) {
 
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = null,
-            modifier = Modifier
-                .size(DimensDP.DP56.dp)
-                .clip(CircleShape)
-        )
+        CircularAvatar(imageUrl = imageUrl)
 
         Text(
             text = authorName,
@@ -170,6 +168,7 @@ private fun UserImage(
             modifier = Modifier
                 .padding(start = DimensDP.DP12.dp)
                 .weight(1f)
+                .clickableNoRipple(onClick),
         )
     }
 }

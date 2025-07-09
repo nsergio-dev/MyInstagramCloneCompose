@@ -2,6 +2,7 @@ package com.nsergio.dev.myinstagramcompose.features.auth.login.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import com.nsergio.dev.myinstagramcompose.features.auth.login.presentation.Login
 
 @Composable
 fun LoginScreen(
+    contentPadding: PaddingValues,
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit
 ) {
@@ -28,6 +30,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(paddingValues = contentPadding)
             .padding(horizontal = DimensDP.DP16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
