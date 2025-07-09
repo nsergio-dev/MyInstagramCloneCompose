@@ -21,6 +21,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
+import com.nsergio.dev.myinstagramcompose.core.ui.components.LikeButton
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
 import com.nsergio.dev.myinstagramcompose.features.feed.presentation.FeedViewModel
 
@@ -39,23 +40,28 @@ fun FeedScreen(
             textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.TopCenter)
         )
-        Posts(posts)
+        Posts(posts, viewModel::onLikeToggle)
     }
 }
 
 @Composable
 private fun Posts(
-    posts: LazyPagingItems<Post>
+    posts: LazyPagingItems<Post>,
+    onPostLiked: (String) -> Unit
 ) {
     LazyColumn {
         items(posts.itemCount) { index ->
-            posts[index]?.let { ImagePost(it) }
+            posts[index]?.let {
+                ImagePost(it) {
+                    onPostLiked.invoke(it.id)
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun ImagePost(post: Post) {
+private fun ImagePost(post: Post, onPostLiked: () -> Unit) {
     AsyncImage(
         model = post.imageUrl,
         contentDescription = null,
@@ -80,4 +86,5 @@ private fun ImagePost(post: Post) {
                 .weight(1f)
         )
     }
+    LikeButton(liked = post.liked, onToggle = onPostLiked)
 }
