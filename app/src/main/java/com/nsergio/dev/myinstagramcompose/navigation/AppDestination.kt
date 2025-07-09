@@ -1,0 +1,14 @@
+package com.nsergio.dev.myinstagramcompose.navigation
+
+/**
+ * All top-level routes in the app.
+ */
+sealed class AppDestination(val route: String) {
+
+    /** Login screen (start). */
+    object Login : AppDestination("login")
+
+    /** Feed after successful login. */
+    object Feed  : AppDestination("feed")
+
+}
