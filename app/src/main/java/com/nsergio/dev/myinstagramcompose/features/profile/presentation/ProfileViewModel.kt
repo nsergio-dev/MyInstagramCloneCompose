@@ -1,10 +1,12 @@
 package com.nsergio.dev.myinstagramcompose.features.profile.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.nsergio.dev.myinstagramcompose.features.feed.data.PostRepository
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.profile.data.FakeUserRepository
 import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.User
+import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.UserId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,22 +17,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repo: FakeUserRepository,
-    savedStateHandle: SavedStateHandle
+    private val userRepo: FakeUserRepository,
+    private val postRepository: PostRepository
 ) : ViewModel() {
 
-    /**
-     * Holds the current user id to display.
-     */
-    private val _userId: MutableStateFlow<String> = MutableStateFlow("")
+    private val _userId = MutableStateFlow(UserId(""))
+
+    val posts: StateFlow<List<PostWithMedia>> = _userId
+        .map { postRepository.postsOf(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     /**
      * Emits a [User] every time [_userId] changes.
      */
     val user: StateFlow<User?> = _userId
-        .map { id -> if (id.isBlank()) null else repo.getUser(id) }
+        .map { id ->
+            if (id.value.isBlank()) {
+                null
+            } else {
+                val user = userRepo.getUser(id)
+                user
+            }
+        }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
 
     /**
      * Updates the user id; triggers a new load.
@@ -38,6 +47,6 @@ class ProfileViewModel @Inject constructor(
      * @param userId Target user id
      */
     fun setUserId(userId: String) {
-        _userId.value = userId
+        _userId.value = UserId(userId)
     }
 }

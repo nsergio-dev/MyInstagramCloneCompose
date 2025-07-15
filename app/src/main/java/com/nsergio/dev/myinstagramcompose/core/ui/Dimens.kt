@@ -9,6 +9,7 @@ enum class DimensDP {
     DP0  { override val dp = 0.dp },
     DP1  { override val dp = 1.dp },
     DP4  { override val dp = 4.dp },
+    DP6  { override val dp = 6.dp },
     DP8  { override val dp = 8.dp },
     DP12 { override val dp = 12.dp },
     DP16 { override val dp = 16.dp },

@@ -1,0 +1,57 @@
+package com.nsergio.dev.myinstagramcompose.features.profile.ui
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
+import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
+import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
+
+/**
+ * Grid of square images for a profile.
+ *
+ * @param userId Id used to seed the mock images
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PostGrid(
+    posts: List<PostWithMedia>,
+    onClickImageDetail: (userId: String, index: Int) -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        contentPadding = PaddingValues(DimensDP.DP1.dp)
+    ) {
+        items(posts) { post ->
+            //val url = "https://picsum.photos/seed/${userId}_$index/300/300"
+            //val postId = "${userId}_$index"              // id único por miniatura
+            //val url = "https://picsum.photos/seed/$postId/300/300"
+            val firsImage = post.media.first()
+            UserProfileImage(
+                url = firsImage.url,
+                onClick = {
+                    onClickImageDetail.invoke(post.id.value, 0) //always in firs position
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun UserProfileImage(url: String, onClick: () -> Unit) {
+    AsyncImage(
+        model = url,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clickableNoRipple(onClick)
+    )
+}

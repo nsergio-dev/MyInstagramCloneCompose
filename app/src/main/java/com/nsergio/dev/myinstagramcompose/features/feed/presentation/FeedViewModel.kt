@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.usecase.GetPostsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,11 +34,17 @@ class FeedViewModel @Inject constructor(
      * Emits PagingData where each Post knows whether it's liked.
      * The underlying paging stream is still collected only once.
      */
-    val posts: StateFlow<PagingData<Post>> = combine(
+    val posts: StateFlow<PagingData<PostWithMedia>> = combine(
         pagingFlow,
         likedIds
     ) { paging, likes ->
-        paging.map { it.copy(liked = likes.contains(it.id)) }
+        val postsLikedByMe = paging.map { postWithMedia ->
+            val postLikedByMe = likes.contains(postWithMedia.id.value)
+            postWithMedia.copy(likedByMe = postLikedByMe)
+        }
+
+        postsLikedByMe
+
     }.stateIn(viewModelScope, SharingStarted.Eagerly, PagingData.empty())
 
     /**

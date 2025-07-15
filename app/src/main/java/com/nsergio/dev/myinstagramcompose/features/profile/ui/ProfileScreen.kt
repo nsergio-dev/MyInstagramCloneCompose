@@ -38,22 +38,31 @@ import com.nsergio.dev.myinstagramcompose.features.profile.presentation.ProfileV
 fun ProfileScreen(
     contentPadding: PaddingValues,
     userId: String,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onClickImageDetail: (userId: String, index: Int) -> Unit
 ) {
 
     LaunchedEffect(userId) {
-        viewModel.setUserId(userId)
+        viewModel.setUserId(userId)      // ← debe quedar así
     }
 
     /* Reactively collect user */
     val user by viewModel.user.collectAsState()
 
-    user?.let { safeUser ->
+    val posts by viewModel.posts.collectAsState()
 
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues = contentPadding)) {
+    user?.let { safeUser ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues = contentPadding)
+        ) {
             ProfileHeader(user = safeUser)
             Spacer(Modifier.height(DimensDP.DP16.dp))
-            PostGrid(userId = safeUser.id)          // grid de fotos mock
+            PostGrid(
+                posts = posts,
+                onClickImageDetail = onClickImageDetail
+            )
         }
 
     }
@@ -73,7 +82,7 @@ private fun ProfileHeader(user: User) {
         UsernameText(name = user.name)
         Spacer(Modifier.height(DimensDP.DP8.dp))
         StatsRow(
-            posts = user.posts,
+            posts = user.posts.count(),
             followers = user.followers,
             following = user.following
         )
@@ -128,29 +137,3 @@ private fun BioText(text: String) {
     )
 }
 
-/**
- * Grid of square images for a profile.
- *
- * @param userId Id used to seed the mock images
- */
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun PostGrid(userId: String) {
-    val count = 60 // mock 60 images
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        contentPadding = PaddingValues(DimensDP.DP1.dp)
-    ) {
-        items(count) { index ->
-            val url = "https://picsum.photos/seed/${userId}_$index/300/300"
-            AsyncImage(
-                model = url,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .clickableNoRipple { /* TODO open detail */ }
-            )
-        }
-    }
-}

@@ -15,4 +15,8 @@ sealed class AppDestination(val route: String) {
         fun createRoute(userId: String) = "profile/$userId"
     }
 
+    object PhotoViewer : AppDestination("photo/{postId}/{index}") {
+        fun createRoute(postId: String, index: Int) = "photo/$postId/$index"
+    }
+
 }

@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.feed.presentation.FeedViewModel
 
 @Composable
@@ -22,7 +22,7 @@ fun FeedScreen(
     viewModel: FeedViewModel = hiltViewModel(),
     onClickProfile: (String) -> Unit
 ) {
-    val posts: LazyPagingItems<Post> = viewModel.posts.collectAsLazyPagingItems()
+    val posts: LazyPagingItems<PostWithMedia> = viewModel.posts.collectAsLazyPagingItems()
 
     Box(
         modifier = Modifier
@@ -45,7 +45,7 @@ fun FeedScreen(
 
 @Composable
 private fun Posts(
-    posts: LazyPagingItems<Post>,
+    posts: LazyPagingItems<PostWithMedia>,
     onLikeToggle: (String) -> Unit,
     onProfileClick: (String) -> Unit
 ) {
@@ -56,7 +56,7 @@ private fun Posts(
                     post = it,
                     onLikeToggle = onLikeToggle,
                     onProfileClick = {
-                        onProfileClick.invoke(it.id)
+                        onProfileClick.invoke(it.authorId.value)
                     }
                 )
             }

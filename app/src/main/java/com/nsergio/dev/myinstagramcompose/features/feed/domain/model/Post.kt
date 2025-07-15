@@ -4,7 +4,7 @@ data class Post(
     val id: String,
     val authorName: String,
     val authorAvatar: String,
-    val imageUrl: String,
+    val imageUrls: List<String>,
     val caption: String,
     val likes: Int,
     val comments: Int,

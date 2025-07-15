@@ -2,15 +2,21 @@ package com.nsergio.dev.myinstagramcompose.features.feed.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
+import com.nsergio.dev.myinstagramcompose.features.common.createUserWithMedia
+import com.nsergio.dev.myinstagramcompose.features.common.fakeUsers
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Media
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostId
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
+import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.User
+import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.UserId
 import kotlin.random.Random
 
 /**
  * Fake paging source that generates dummy posts on the fly.
  */
-class PostPagingSource : PagingSource<Int, Post>() {
+class PostPagingSource() : PagingSource<Int, PostWithMedia>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PostWithMedia> {
 
         val page = params.key ?: 0
         val size = params.loadSize
@@ -22,9 +28,9 @@ class PostPagingSource : PagingSource<Int, Post>() {
     }
 
     private fun loadedResult(
-        posts: List<Post>,
+        posts: List<PostWithMedia>,
         page: Int
-    ): LoadResult.Page<Int, Post> = LoadResult.Page(
+    ): LoadResult.Page<Int, PostWithMedia> = LoadResult.Page(
         data = posts,
         prevKey = if (page == 0) null else page - 1,
         nextKey = page + 1
@@ -33,32 +39,35 @@ class PostPagingSource : PagingSource<Int, Post>() {
     private fun getMockPosts(
         size: Int,
         page: Int
-    ): List<Post> = List(size) { index ->
-        val id = "${page * size + index}"
-        val randomForCaption = Random.nextBoolean()
-        val lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut dignissim est. Proin ut nisi ut lacus volutpat mollis quis a odio. Donec et tellus feugiat, efficitur urna ultrices, mattis orci. Nunc augue felis, viverra eget sagittis vel, tristique at lacus."
-        val caption = if (randomForCaption) " $lorem" else ""
+    ): List<PostWithMedia> {
 
-        Post(
-            id = id,
-            authorName = "user_$id",
-            authorAvatar = "https://i.pravatar.cc/150?u=$id",
-            imageUrl = "https://picsum.photos/seed/$id/600/600",
-            caption = "Awesome photo #$id$caption",
-            likes = Random.nextInt(1, 1_000),
-            comments = Random.nextInt(1, 1_000),
-            shares = Random.nextInt(1, 1_000),     // ahora menos…
-            Random.nextLong(MILLIS_IN_HOUR,        // ≥ 1 h
-                7 * MILLIS_IN_DAY + 1)
+        for (index in 0..size) {
+            val userWithPost = createUserWithMedia(index, page)
 
-        )
+            if (!fakeUsers.contains(userWithPost)) {
+                fakeUsers.add(userWithPost)
+            }
+            userWithPost.posts.first()
+        }
+
+        val firstUserPostLis = fakeUsers.map { user -> user.posts.first() }
+        return firstUserPostLis
+
     }
 
-    override fun getRefreshKey(state: PagingState<Int, Post>): Int? = 0
+    override fun getRefreshKey(state: PagingState<Int, PostWithMedia>): Int? = 0
 
-    companion object {
-        private const val MILLIS_IN_MIN  = 60_000L
-        private const val MILLIS_IN_HOUR = 60 * MILLIS_IN_MIN        // 3_600_000
-        private const val MILLIS_IN_DAY  = 24 * MILLIS_IN_HOUR
+    /*
+
+    override fun getRefreshKey(state: PagingState<Int, Post>): Int? =
+        state.anchorPosition?.let { pos ->
+            state.closestPageToPosition(pos)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(pos)?.nextKey?.minus(1)
+        }*/
+
+    private companion object {
+        const val MILLIS_IN_MIN = 60_000L
+        const val MILLIS_IN_HOUR = 60 * MILLIS_IN_MIN        // 3_600_000
+        const val MILLIS_IN_DAY = 24 * MILLIS_IN_HOUR
     }
 }

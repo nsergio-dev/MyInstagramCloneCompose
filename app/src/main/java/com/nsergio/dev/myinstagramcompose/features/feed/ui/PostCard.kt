@@ -47,7 +47,8 @@ import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
 import com.nsergio.dev.myinstagramcompose.core.ui.components.LikeButton
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
-import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Post
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import kotlinx.coroutines.delay
 
 
@@ -56,7 +57,7 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun PostCard(
-    post: Post,
+    post: PostWithMedia,
     onLikeToggle: (String) -> Unit,
     onProfileClick: () -> Unit
 ) {
@@ -64,21 +65,26 @@ fun PostCard(
 
         UserImage(
             authorName = post.authorName,
-            imageUrl = post.authorAvatar,
+            imageUrl = post.authorAvatarUrl,
             onClick = onProfileClick
         )
 
+        val imageUrls = post.media
+            .filter { it.type == MediaType.IMAGE }
+            .map { it.url }
+
         PostImage(
-            imageUrl = post.imageUrl,
-            onDoubleTap = { onLikeToggle(post.id) }
+            imageUrls = imageUrls,
+            startIndex = 0,
+            onDoubleTap = { onLikeToggle(post.id.value) }
         )
 
         PostActions(
-            liked = post.liked,
-            likes = post.likes,
-            comments = post.comments,
-            shares = post.shares,
-            onLike = { onLikeToggle(post.id) }
+            liked = post.likedByMe,
+            likes = post.likeCount,
+            comments = post.commentCount,
+            shares = post.shareCount,
+            onLike = { onLikeToggle(post.id.value) }
         )
 
         UserNameAndCaption(
@@ -91,10 +97,14 @@ fun PostCard(
 
 @Composable
 private fun PostImage(
-    imageUrl: String,
+    imageUrls: List<String>,
+    startIndex: Int,
     onDoubleTap: () -> Unit
 ) {
     var showHeart by remember { mutableStateOf(false) }
+
+    val imageUrl = imageUrls[startIndex]
+
 
     /* Auto-hide heart after 400 ms */
     if (showHeart) {
