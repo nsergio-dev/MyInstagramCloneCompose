@@ -34,15 +34,12 @@ private fun getListMedia(
         val imageCount = Random.nextInt(1, 6)
         val media = List(imageCount) { indexMedia ->
             Media(
-                url = "https://picsum.photos/seed/${postId.value}_$indexMedia/600/600"
+                url = "https://picsum.photos/seed/${postId.value}_$indexMedia/1080/1920"
+                //url = "https://picsum.photos/seed/${postId.value}_$indexMedia/600/600"
             )
         }
 
-        val caption = if (isRandom) {
-            "Mock caption $indexPost"
-        } else {
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut dignissim est. Proin ut nisi ut lacus volutpat mollis quis a odio. Donec et tellus feugiat, efficitur urna ultrices, mattis orci. Nunc augue felis, viverra eget sagittis vel, tristique at lacus."
-        }
+        val caption = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut dignissim est. Proin ut nisi ut lacus volutpat mollis quis a odio. Donec et tellus feugiat, efficitur urna ultrices, mattis orci. Nunc augue felis, viverra eget sagittis vel, tristique at lacus."
 
         PostWithMedia(
             id = postId,

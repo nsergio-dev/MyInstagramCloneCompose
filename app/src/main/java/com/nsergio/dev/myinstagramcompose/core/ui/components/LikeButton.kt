@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 
@@ -54,7 +55,7 @@ private fun IconButton(
     Icon(
         imageVector = imageVector,
         contentDescription = null,
-        tint = if (liked) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant,
+        tint = if (liked) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier
             .scale(scale)
             .clickableNoRipple(onToggle)

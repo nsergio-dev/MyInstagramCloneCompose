@@ -11,28 +11,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.nsergio.dev.myinstagramcompose.navigation.AppDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar(navController: NavHostController) {
+
+    val noTopBarRoutes = setOf(
+        AppDestination.Login.route,
+        AppDestination.PhotoViewer.route
+    )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
 
     val canNavigateBack = navController.previousBackStackEntry != null
+    val showTopBar = currentRoute !in noTopBarRoutes
 
-    TopAppBar(
-        title = { Text(currentRoute) },
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back"
-                    )
+    if (showTopBar) {
+        TopAppBar(
+            title = { Text(currentRoute) },
+            navigationIcon = {
+                if (canNavigateBack) {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
