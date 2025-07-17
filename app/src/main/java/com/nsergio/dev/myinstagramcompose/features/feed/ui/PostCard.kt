@@ -1,6 +1,8 @@
 package com.nsergio.dev.myinstagramcompose.features.feed.ui
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -41,10 +45,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
 import com.nsergio.dev.myinstagramcompose.core.ui.components.LikeButton
+import com.nsergio.dev.myinstagramcompose.core.ui.components.RemoteAsyncImage
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
@@ -127,11 +131,22 @@ private fun PostImage(
             }
     ) {
 
-        AsyncImage(
+        RemoteAsyncImage(
             model = imageUrl,
-            contentDescription = null,
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop
+            crossfade = true,
+            content = {
+                Image(
+                    contentDescription = null,
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(Color.Black),
+                    contentScale = ContentScale.Crop,
+                    painter = it,
+                )
+            },
+            onLoading = {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         )
 
 

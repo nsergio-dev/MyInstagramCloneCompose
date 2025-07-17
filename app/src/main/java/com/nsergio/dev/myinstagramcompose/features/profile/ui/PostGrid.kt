@@ -1,16 +1,21 @@
 package com.nsergio.dev.myinstagramcompose.features.profile.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
+import com.nsergio.dev.myinstagramcompose.core.ui.components.RemoteAsyncImage
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 
@@ -46,12 +51,29 @@ fun PostGrid(
 
 @Composable
 private fun UserProfileImage(url: String, onClick: () -> Unit) {
-    AsyncImage(
-        model = url,
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
+    Box(
         modifier = Modifier
+            .fillMaxSize()
             .aspectRatio(1f)
-            .clickableNoRipple(onClick)
-    )
+    ) {
+        RemoteAsyncImage(
+            model = url,
+            crossfade = true,
+            content = {
+                Image(
+                    contentDescription = null,
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .clickableNoRipple(onClick),
+                    contentScale = ContentScale.Crop,
+                    painter = it,
+                )
+            },
+            onLoading = {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+        )
+    }
 }

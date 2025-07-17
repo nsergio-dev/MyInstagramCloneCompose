@@ -1,6 +1,7 @@
 package com.nsergio.dev.myinstagramcompose.features.photo_preview.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +37,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
+import com.nsergio.dev.myinstagramcompose.core.ui.components.RemoteAsyncImage
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.presentation.PhotoViewerViewModel
@@ -76,14 +78,25 @@ fun PhotoViewerScreen(
                 }
                 .systemBarsPadding()
         ) {
-            HorizontalPager(state = pagerState) { page ->
-                AsyncImage(
-                    model = images[page],
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black),
-                    contentScale = ContentScale.Crop
+            HorizontalPager(state = pagerState, modifier = Modifier.matchParentSize()) { page ->
+                val imageUrl = images[page]
+                RemoteAsyncImage(
+                    model = imageUrl,
+                    crossfade = true,
+                    content = {
+                        Image(
+                            contentDescription = null,
+                            modifier = Modifier
+                                .matchParentSize(),
+                            contentScale = ContentScale.Crop,
+                            painter = it,
+                        )
+                    },
+                    onLoading = {
+                        Box (modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
                 )
             }
 
@@ -174,6 +187,7 @@ private fun BoxScope.PositionIndicator(
             .padding(bottom = DimensDP.DP16.dp),
         horizontalArrangement = Arrangement.spacedBy(DimensDP.DP4.dp)
     ) {
+        if (size <= 1) return@Row
         repeat(size) { index ->
             val selected = index == currentPage
             val sizeBox = if (selected) DimensDP.DP8.dp else DimensDP.DP6.dp

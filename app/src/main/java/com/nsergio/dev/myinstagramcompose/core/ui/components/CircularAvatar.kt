@@ -1,12 +1,14 @@
 package com.nsergio.dev.myinstagramcompose.core.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
-import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 
 /**
@@ -20,11 +22,26 @@ fun CircularAvatar(
     size: Dp = DimensDP.DP56.dp,
     contentDescription: String? = null
 ) {
-    AsyncImage(
+    RemoteAsyncImage(
         model = imageUrl,
-        contentDescription = contentDescription,
-        modifier = Modifier
-            .size(size)
-            .clip(CircleShape)
+        crossfade = true,
+        content = {
+            Image(
+                contentDescription = contentDescription,
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape),
+                painter = it,
+            )
+        },
+        onLoading = {
+            Image(
+                contentDescription = contentDescription,
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape),
+                imageVector = Icons.Rounded.AccountCircle,
+            )
+        }
     )
 }

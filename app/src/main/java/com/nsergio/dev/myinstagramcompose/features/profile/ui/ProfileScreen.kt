@@ -43,7 +43,7 @@ fun ProfileScreen(
 ) {
 
     LaunchedEffect(userId) {
-        viewModel.setUserId(userId)      // ← debe quedar así
+        viewModel.setUserId(userId)
     }
 
     /* Reactively collect user */
