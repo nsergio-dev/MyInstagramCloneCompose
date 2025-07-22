@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,13 +29,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
@@ -63,38 +68,81 @@ fun PhotoViewerScreen(
         val pagerState = rememberPagerState(
             pageCount = { images.size }
         )
+        val MAX_SCALE = 4f
         LaunchedEffect(startIndex) {
             pagerState.scrollToPage(startIndex)
         }
 
-        Box(
+        // Estados para zoom y pan
+        var scale by remember { mutableStateOf(1f) }
+        var offset by remember { mutableStateOf(Offset.Zero) }
+
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .pointerInput(Unit) {
-                    detectTapGestures {
-
-                    }
-                }
                 .systemBarsPadding()
         ) {
-            HorizontalPager(state = pagerState, modifier = Modifier.matchParentSize()) { page ->
+            val containerWidth = with(LocalDensity.current) { maxWidth.toPx() }
+            val containerHeight = with(LocalDensity.current) { maxHeight.toPx() }
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.matchParentSize(),
+                userScrollEnabled = (scale == 1f)
+            ) { page ->
                 val imageUrl = images[page]
+
                 RemoteAsyncImage(
                     model = imageUrl,
                     crossfade = true,
-                    content = {
+                    content = { painter ->
                         Image(
+                            painter = painter,
                             contentDescription = null,
-                            modifier = Modifier
-                                .matchParentSize(),
                             contentScale = ContentScale.Crop,
-                            painter = it,
+                            modifier = Modifier
+                                .matchParentSize()
+                                .graphicsLayer(
+                                    scaleX = scale,
+                                    scaleY = scale,
+                                    translationX = offset.x,
+                                    translationY = offset.y
+                                )
+                                // doble tap para reset
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onDoubleTap = {
+                                        scale = 1f
+                                        offset = Offset.Zero
+                                    })
+                                }
+                                // pinch & pan condicional
+                                .pointerInput(Unit) {
+                                    detectConditionalTransformGestures { _, pan, zoom, _ ->
+                                        val newScale = (scale * zoom).coerceIn(1f, MAX_SCALE)
+                                        val maxX = (containerWidth * (newScale - 1f)) / 2f
+                                        val maxY = (containerHeight * (newScale - 1f)) / 2f
+
+                                        // Aquí multiplico el pan por el factor de escala
+                                        val scaledPan = pan * scale
+
+                                        offset = if (newScale > 1f) {
+                                            Offset(
+                                                x = (offset.x + scaledPan.x).coerceIn(-maxX, maxX),
+                                                y = (offset.y + scaledPan.y).coerceIn(-maxY, maxY)
+                                            )
+                                        } else {
+                                            Offset.Zero
+                                        }
+
+                                        scale = newScale
+                                    }
+                                }
                         )
                     },
                     onLoading = {
-                        Box (modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        Box(Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
                         }
                     }
                 )
@@ -106,8 +154,7 @@ fun PhotoViewerScreen(
             )
 
             Caption(
-                modifier = Modifier
-                    .align(Alignment.BottomStart),
+                modifier = Modifier.align(Alignment.BottomStart),
                 caption = safePost.caption,
                 userName = safePost.authorName,
                 userAvatarUrl = safePost.authorAvatarUrl
