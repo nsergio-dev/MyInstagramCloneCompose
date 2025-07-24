@@ -9,7 +9,7 @@ sealed class AppDestination(val route: String) {
     object Login : AppDestination("login")
 
     /** Feed after successful login. */
-    object Feed  : AppDestination("feed")
+    object MainPager  : AppDestination("main_pager")
 
     object Profile : AppDestination("profile/{userId}") {
         fun createRoute(userId: String) = "profile/$userId"

@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
-import com.nsergio.dev.myinstagramcompose.core.ui.components.MyTopAppBar
 import com.nsergio.dev.myinstagramcompose.core.ui.theme.MyInstagramTheme
 import com.nsergio.dev.myinstagramcompose.navigation.AppNavGraph
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,16 +17,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyInstagramTheme {
                 val navController = rememberNavController()
-                Scaffold(
-                    topBar = {
-                        MyTopAppBar(navController)
-                    },
-                ) { innerPadding ->
-                    AppNavGraph(
-                        navController = navController,
-                        contentPadding = innerPadding
-                    )
-                }
+                AppNavGraph(navController = navController)
             }
         }
     }

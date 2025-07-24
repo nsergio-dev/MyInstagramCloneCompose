@@ -26,9 +26,10 @@ enum class DimensDP {
 
 enum class DimensSp {
 
-    SP12 { override val value = 12.sp },
-    SP14 { override val value = 14.sp };
+    SP12 { override val sp = 12.sp },
+    SP14 { override val sp = 14.sp },
+    SP20 { override val sp = 20.sp };
 
-    abstract val value: TextUnit
+    abstract val sp: TextUnit
 
 }

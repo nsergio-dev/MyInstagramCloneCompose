@@ -1,18 +1,13 @@
 package com.nsergio.dev.myinstagramcompose.features.profile.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,13 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
-import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.User
 import com.nsergio.dev.myinstagramcompose.features.profile.presentation.ProfileViewModel
 
@@ -36,7 +28,6 @@ import com.nsergio.dev.myinstagramcompose.features.profile.presentation.ProfileV
  */
 @Composable
 fun ProfileScreen(
-    contentPadding: PaddingValues,
     userId: String,
     viewModel: ProfileViewModel = hiltViewModel(),
     onClickImageDetail: (userId: String, index: Int) -> Unit
@@ -55,7 +46,6 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = contentPadding)
         ) {
             ProfileHeader(user = safeUser)
             Spacer(Modifier.height(DimensDP.DP16.dp))

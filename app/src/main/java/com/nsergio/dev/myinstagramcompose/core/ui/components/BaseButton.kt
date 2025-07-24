@@ -29,7 +29,7 @@ fun BaseButton(
         Text(
             text = text.uppercase(),
             style = MaterialTheme.typography.labelLarge.copy(
-                fontSize = DimensSp.SP14.value
+                fontSize = DimensSp.SP14.sp
             )
         )
     }

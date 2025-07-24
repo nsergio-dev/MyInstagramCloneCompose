@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -30,11 +28,6 @@ fun FeedScreen(
             .padding(paddingValues = contentPadding),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "Welcome to the feed!",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
         Posts(
             posts = posts,
             onLikeToggle = viewModel::onLikeToggle,

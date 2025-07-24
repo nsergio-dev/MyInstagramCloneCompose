@@ -1,19 +1,18 @@
 package com.nsergio.dev.myinstagramcompose.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.nsergio.dev.myinstagramcompose.core.ui.components.MainPagerScreen
 import com.nsergio.dev.myinstagramcompose.features.auth.login.ui.LoginScreen
-import com.nsergio.dev.myinstagramcompose.features.feed.ui.FeedScreen
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerScreen
 import com.nsergio.dev.myinstagramcompose.features.profile.ui.ProfileScreen
 
 @Composable
-fun AppNavGraph(navController: NavHostController, contentPadding: PaddingValues) {
+fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
@@ -22,18 +21,16 @@ fun AppNavGraph(navController: NavHostController, contentPadding: PaddingValues)
 
         composable(AppDestination.Login.route) {
             LoginScreen(
-                contentPadding = contentPadding,
                 onLoginSuccess = {
-                    navController.navigate(AppDestination.Feed.route) {
+                    navController.navigate(AppDestination.MainPager.route) {
                         popUpTo(AppDestination.Login.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(AppDestination.Feed.route) {
-            FeedScreen(
-                contentPadding = contentPadding,
+        composable(AppDestination.MainPager.route) {
+            MainPagerScreen (
                 onClickProfile = {
                     navController.navigate(
                         route = AppDestination.Profile.createRoute(userId = it)
@@ -45,11 +42,10 @@ fun AppNavGraph(navController: NavHostController, contentPadding: PaddingValues)
         composable(
             route = AppDestination.Profile.route,
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
-        ) {backStackEntry ->
+        ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId") ?: "me"
             ProfileScreen(
                 userId = userId,
-                contentPadding = contentPadding,
                 onClickImageDetail = { postId, index ->
                     navController.navigate(
                         route = AppDestination.PhotoViewer.createRoute(postId, index)
@@ -57,15 +53,16 @@ fun AppNavGraph(navController: NavHostController, contentPadding: PaddingValues)
                 }
             )
         }
+
         composable(
             route = AppDestination.PhotoViewer.route,
             arguments = listOf(
                 navArgument("postId") { type = NavType.StringType },
-                navArgument("index")  { type = NavType.IntType }
+                navArgument("index") { type = NavType.IntType }
             )
         ) { entry ->
             val postId = entry.arguments?.getString("postId").orEmpty()
-            val index  = entry.arguments?.getInt("index") ?: 0
+            val index = entry.arguments?.getInt("index") ?: 0
             PhotoViewerScreen(
                 postId = postId,
                 index = index,
