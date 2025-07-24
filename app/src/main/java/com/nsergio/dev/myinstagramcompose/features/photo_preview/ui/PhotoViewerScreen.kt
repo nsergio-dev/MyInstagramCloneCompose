@@ -1,51 +1,23 @@
 package com.nsergio.dev.myinstagramcompose.features.photo_preview.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
-import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
-import com.nsergio.dev.myinstagramcompose.core.ui.components.RemoteAsyncImage
-import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.presentation.PhotoViewerViewModel
 
@@ -64,189 +36,66 @@ fun PhotoViewerScreen(
     val startIndex by viewModel.startIndex.collectAsState()
 
     post?.let { safePost ->
-        val images = safePost.media.filter { it.type == MediaType.IMAGE }.map { it.url }
-        val pagerState = rememberPagerState(
-            pageCount = { images.size }
+        PhotoViewerContent(
+            images = safePost.media
+                .filter { it.type == MediaType.IMAGE }
+                .map { it.url },
+            caption = safePost.caption,
+            authorName = safePost.authorName,
+            authorAvatarUrl = safePost.authorAvatarUrl,
+            initialPage = startIndex,
+            onClose = onClose
         )
-        val MAX_SCALE = 4f
-        LaunchedEffect(startIndex) {
-            pagerState.scrollToPage(startIndex)
-        }
-
-        // Estados para zoom y pan
-        var scale by remember { mutableStateOf(1f) }
-        var offset by remember { mutableStateOf(Offset.Zero) }
-
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-                .systemBarsPadding()
-        ) {
-            val containerWidth = with(LocalDensity.current) { maxWidth.toPx() }
-            val containerHeight = with(LocalDensity.current) { maxHeight.toPx() }
-
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.matchParentSize(),
-                userScrollEnabled = (scale == 1f)
-            ) { page ->
-                val imageUrl = images[page]
-
-                RemoteAsyncImage(
-                    model = imageUrl,
-                    crossfade = true,
-                    content = { painter ->
-                        Image(
-                            painter = painter,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .matchParentSize()
-                                .graphicsLayer(
-                                    scaleX = scale,
-                                    scaleY = scale,
-                                    translationX = offset.x,
-                                    translationY = offset.y
-                                )
-                                // doble tap para reset
-                                .pointerInput(Unit) {
-                                    detectTapGestures(onDoubleTap = {
-                                        scale = 1f
-                                        offset = Offset.Zero
-                                    })
-                                }
-                                // pinch & pan condicional
-                                .pointerInput(Unit) {
-                                    detectConditionalTransformGestures { _, pan, zoom, _ ->
-                                        val newScale = (scale * zoom).coerceIn(1f, MAX_SCALE)
-                                        val maxX = (containerWidth * (newScale - 1f)) / 2f
-                                        val maxY = (containerHeight * (newScale - 1f)) / 2f
-
-                                        // Aquí multiplico el pan por el factor de escala
-                                        val scaledPan = pan * scale
-
-                                        offset = if (newScale > 1f) {
-                                            Offset(
-                                                x = (offset.x + scaledPan.x).coerceIn(-maxX, maxX),
-                                                y = (offset.y + scaledPan.y).coerceIn(-maxY, maxY)
-                                            )
-                                        } else {
-                                            Offset.Zero
-                                        }
-
-                                        scale = newScale
-                                    }
-                                }
-                        )
-                    },
-                    onLoading = {
-                        Box(Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(Modifier.align(Alignment.Center))
-                        }
-                    }
-                )
-            }
-
-            PositionIndicator(
-                size = images.size,
-                currentPage = pagerState.currentPage
-            )
-
-            Caption(
-                modifier = Modifier.align(Alignment.BottomStart),
-                caption = safePost.caption,
-                userName = safePost.authorName,
-                userAvatarUrl = safePost.authorAvatarUrl
-            )
-
-        }
-        BackHandler(onBack = onClose)
     }
 }
 
 @Composable
-private fun Caption(
-    modifier: Modifier,
+private fun PhotoViewerContent(
+    images: List<String>,
     caption: String,
-    userName: String,
-    userAvatarUrl: String,
+    authorName: String,
+    authorAvatarUrl: String,
+    initialPage: Int,
+    onClose: () -> Unit
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    val maxLines = if (expanded) Int.MAX_VALUE else 1
+    val pagerState = rememberPagerState(pageCount = { images.size })
+    LaunchedEffect(initialPage) { pagerState.scrollToPage(initialPage) }
 
-    Column(
-        modifier = modifier
-            .padding(
-                start = DimensDP.DP16.dp,
-                bottom = DimensDP.DP32.dp
-            )
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .systemBarsPadding()
     ) {
+        val containerWidthPx = with(LocalDensity.current) { maxWidth.toPx() }
+        val containerHeightPx = with(LocalDensity.current) { maxHeight.toPx() }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            CircularAvatar(imageUrl = userAvatarUrl)
-            Spacer(Modifier.width(DimensDP.DP8.dp))
-            Text(
-                text = userName,
-                color = Color.White,
-                style = MaterialTheme.typography.bodyMedium
+        ZoomableImagePager(
+            images = images,
+            pagerState = pagerState,
+            containerSize = Size(
+                width = containerWidthPx,
+                height = containerHeightPx
             )
-        }
+        )
 
-        Box(
-            modifier = modifier
-                .padding(top = DimensDP.DP8.dp)
-                .heightIn(max = DimensDP.DP64.dp)
-                .verticalScroll(
-                    rememberScrollState(),
-                    enabled = expanded
-                )
-        ) {
-            Text(
-                modifier = Modifier
-                    .clickableNoRipple {
-                        expanded = !expanded
-                    },
-                text = caption,
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = maxLines,
-                overflow = TextOverflow.Ellipsis
-            )
+        PositionIndicator(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = DimensDP.DP16.dp),
+            size = images.size,
+            currentPage = pagerState.currentPage
+        )
 
-        }
-
+        CaptionAndUserInfo(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = DimensDP.DP48.dp),
+            caption = caption,
+            userName = authorName,
+            userAvatarUrl = authorAvatarUrl
+        )
     }
 
-}
-
-@Composable
-private fun BoxScope.PositionIndicator(
-    size: Int,
-    currentPage: Int
-) {
-    Row(
-        Modifier
-            .align(Alignment.BottomCenter)
-            .padding(bottom = DimensDP.DP16.dp),
-        horizontalArrangement = Arrangement.spacedBy(DimensDP.DP4.dp)
-    ) {
-        if (size <= 1) return@Row
-        repeat(size) { index ->
-            val selected = index == currentPage
-            val sizeBox = if (selected) DimensDP.DP8.dp else DimensDP.DP6.dp
-            Box(
-                Modifier
-                    .size(sizeBox)
-                    .background(
-                        if (selected) Color.White
-                        else Color.White.copy(alpha = 0.4f),
-                        shape = MaterialTheme.shapes.small
-                    )
-            )
-        }
-    }
+    BackHandler(onBack = onClose)
 }
