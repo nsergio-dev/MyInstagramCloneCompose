@@ -1,11 +1,14 @@
 package com.nsergio.dev.myinstagramcompose.features.common
 
+import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryItem
+import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryRing
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Media
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostId
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.User
 import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.UserId
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 val fakeUsers = mutableListOf<User>()
 
@@ -67,6 +70,35 @@ private fun createUser(userId: UserId): User = User(
     followers = Random.nextInt(1_000, 20_000),
     following = Random.nextInt(100, 900)
 )
+
+fun fakeHistoriesItemsFeed(): List<StoryItem> {
+
+    val sizeList = Random.nextInt(10..20)
+
+    return List(sizeList) { index ->
+        val isFemale = Random.nextBoolean()
+        var userName: String
+        var imageUser: String
+        val lastName = FakeNameUser.getLastName().replaceFirstChar { it.lowercase() }
+
+        if (isFemale) {
+            val name = FakeNameUser.getFemaleName().replaceFirstChar { it.lowercase() }
+            userName = "${name}_$lastName"
+            imageUser = "https://randomuser.me/api/portraits/women/${index + 1}.jpg"
+        } else {
+            val name = FakeNameUser.getMaleName().replaceFirstChar { it.lowercase() }
+            userName = "${name}_$lastName"
+            imageUser = "https://randomuser.me/api/portraits/men/${index + 1}.jpg"
+        }
+
+        StoryItem(
+            id = "id_$index",
+            username = userName,
+            avatarUrl = imageUser,
+            ring = StoryRing.entries.random()
+        )
+    }.sortedByDescending { it.ring }
+}
 
 private const val MILLIS_IN_MIN = 60_000L
 private const val MILLIS_IN_HOUR = 60 * MILLIS_IN_MIN        // 3_600_000

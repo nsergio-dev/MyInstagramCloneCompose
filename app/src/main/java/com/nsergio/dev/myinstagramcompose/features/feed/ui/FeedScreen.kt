@@ -11,6 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.nsergio.dev.myinstagramcompose.core.ui.components.StoriesRow
+import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryItem
+import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryRing
+import com.nsergio.dev.myinstagramcompose.features.common.fakeHistoriesItemsFeed
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.feed.presentation.FeedViewModel
 
@@ -43,6 +47,20 @@ private fun Posts(
     onProfileClick: (String) -> Unit
 ) {
     LazyColumn {
+        item {
+            StoriesRow(
+                currentUser = StoryItem(
+                    id = "me",
+                    username = "Tu nombre",
+                    avatarUrl = "https://randomuser.me/api/portraits/men/1.jpg",
+                    ring = StoryRing.NONE
+                ),
+                stories = fakeHistoriesItemsFeed(),
+                onClickStory = { /* navegar a historia / perfil */ },
+                onClickAddStory = { /* abrir selector para crear historia */ }
+            )
+        }
+
         items(posts.itemCount) { index ->
             posts[index]?.let {
                 PostCard(
