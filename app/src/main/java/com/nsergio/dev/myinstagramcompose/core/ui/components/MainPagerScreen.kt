@@ -1,16 +1,13 @@
 package com.nsergio.dev.myinstagramcompose.core.ui.components
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.nsergio.dev.myinstagramcompose.features.chat.ui.ChatScreen
 import com.nsergio.dev.myinstagramcompose.features.feed.ui.FeedScreen
@@ -50,7 +47,18 @@ fun MainPagerScreen(
 
         },
         bottomBar = {
-            BottomNavigationBar(currentPage = pagerState.currentPage)
+            BottomNavigationBar(
+                currentPage = pagerState.currentPage,
+                onSelectedPage = { index ->
+                    scope.launch {
+                        delay(150)
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                onProfileClick = {
+                    onClickProfile.invoke("me")
+                }
+            )
         }
     ) { innerPadding ->
         HorizontalPager(

@@ -62,14 +62,25 @@ private fun getListMedia(
     return postWithMedia
 }
 
-private fun createUser(userId: UserId): User = User(
-    id = userId,
-    name = "Name ${userId.value}",
-    avatarUrl = "https://i.pravatar.cc/150?u=${userId.value}",
-    bio = "Just a mock bio for Name ${userId.value}. Lorem ipsum dolor sit amet…",
-    followers = Random.nextInt(1_000, 20_000),
-    following = Random.nextInt(100, 900)
-)
+private fun createUser(userId: UserId): User {
+    val isFemale = Random.nextBoolean()
+    val index = Random.nextInt(0..100)
+    val userName = FakeNameUser.getFullName(isFemale)
+    val avatarUrl = if (isFemale) {
+        //"https://i.pravatar.cc/150?u=${userId.value}"
+        "https://randomuser.me/api/portraits/women/${index}.jpg"
+    } else {
+        "https://randomuser.me/api/portraits/men/${index}.jpg"
+    }
+    return User(
+        id = userId,
+        name = userName,
+        avatarUrl = avatarUrl,
+        bio = "Just a mock bio for Name ${userId.value}. Lorem ipsum dolor sit amet…",
+        followers = Random.nextInt(1_000, 20_000),
+        following = Random.nextInt(100, 900)
+    )
+}
 
 fun fakeHistoriesItemsFeed(): List<StoryItem> {
 
@@ -77,18 +88,12 @@ fun fakeHistoriesItemsFeed(): List<StoryItem> {
 
     return List(sizeList) { index ->
         val isFemale = Random.nextBoolean()
-        var userName: String
-        var imageUser: String
-        val lastName = FakeNameUser.getLastName().replaceFirstChar { it.lowercase() }
+        val userName: String = FakeNameUser.getFullName(isFemale)
 
-        if (isFemale) {
-            val name = FakeNameUser.getFemaleName().replaceFirstChar { it.lowercase() }
-            userName = "${name}_$lastName"
-            imageUser = "https://randomuser.me/api/portraits/women/${index + 1}.jpg"
+        val imageUser: String = if (isFemale) {
+            "https://randomuser.me/api/portraits/women/${index + 1}.jpg"
         } else {
-            val name = FakeNameUser.getMaleName().replaceFirstChar { it.lowercase() }
-            userName = "${name}_$lastName"
-            imageUser = "https://randomuser.me/api/portraits/men/${index + 1}.jpg"
+            "https://randomuser.me/api/portraits/men/${index + 1}.jpg"
         }
 
         StoryItem(

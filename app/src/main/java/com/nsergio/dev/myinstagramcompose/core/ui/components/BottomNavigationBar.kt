@@ -13,19 +13,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import coil.compose.rememberAsyncImagePainter
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 
 @Composable
-fun BottomNavigationBar(currentPage: Int) {
-
-    var selectedIndex by remember { mutableIntStateOf(0) }
+fun BottomNavigationBar(
+    currentPage: Int,
+    onSelectedPage: (Int) -> Unit,
+    onProfileClick: () -> Unit = {}
+) {
 
     if (currentPage != MainPagerPage.Feed.ordinal) return
 
@@ -33,28 +31,31 @@ fun BottomNavigationBar(currentPage: Int) {
         containerColor = MaterialTheme.colorScheme.background
     ) {
         NavigationBarItem(
-            selected = selectedIndex == 0,
-            onClick = { selectedIndex = 0 },
+            selected = currentPage == 0,
+            onClick = { onSelectedPage.invoke(0) },
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
         )
         NavigationBarItem(
-            selected = selectedIndex == 1,
-            onClick = { selectedIndex = 1 },
+            selected = currentPage == 1,
+            onClick = { onSelectedPage.invoke(1) },
             icon = { Icon(Icons.Default.Search, contentDescription = "Search") }
         )
         NavigationBarItem(
-            selected = selectedIndex == 2,
-            onClick = { selectedIndex = 2 },
+            selected = currentPage == 2,
+            onClick = { onSelectedPage.invoke(2) },
             icon = { Icon(Icons.Default.Add, contentDescription = "Add") }
         )
         NavigationBarItem(
-            selected = selectedIndex == 3,
-            onClick = { selectedIndex = 3 },
+            selected = currentPage == 3,
+            onClick = { onSelectedPage.invoke(3) },
             icon = { Icon(Icons.Default.VideoLibrary, contentDescription = "Reels") }
         )
         NavigationBarItem(
-            selected = selectedIndex == 4,
-            onClick = { selectedIndex = 4 },
+            selected = currentPage == 4,
+            onClick = {
+                //onSelectedPage.invoke(4)
+                onProfileClick.invoke()
+            },
             icon = {
                 Image(
                     painter = rememberAsyncImagePainter("https://randomuser.me/api/portraits/men/1.jpg"),

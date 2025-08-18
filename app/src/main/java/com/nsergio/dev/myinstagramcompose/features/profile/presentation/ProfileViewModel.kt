@@ -47,6 +47,12 @@ class ProfileViewModel @Inject constructor(
      * @param userId Target user id
      */
     fun setUserId(userId: String) {
-        _userId.value = UserId(userId)
+        val id = if (userId == "me") {
+            val user = userRepo.getUser(UserId("me"))
+            user?.id ?: UserId("")
+        } else {
+            UserId(userId)
+        }
+        _userId.value = id
     }
 }

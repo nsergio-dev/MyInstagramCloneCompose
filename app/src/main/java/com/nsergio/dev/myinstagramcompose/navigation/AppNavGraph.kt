@@ -50,7 +50,8 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.navigate(
                         route = AppDestination.PhotoViewer.createRoute(postId, index)
                     )
-                }
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
 

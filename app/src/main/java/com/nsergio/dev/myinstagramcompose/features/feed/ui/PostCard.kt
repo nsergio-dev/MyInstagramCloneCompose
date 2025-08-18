@@ -183,7 +183,10 @@ private fun UserImage(
     imageUrl: String,
     onClick: () -> Unit
 ) {
-    Row(modifier = Modifier.padding(DimensDP.DP12.dp)) {
+    Row(
+        modifier = Modifier.padding(DimensDP.DP12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
         CircularAvatar(imageUrl = imageUrl)
 
