@@ -37,11 +37,14 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostId
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlin.math.abs
@@ -50,14 +53,15 @@ import kotlin.math.abs
  * Estado visual del aro alrededor del avatar.
  */
 enum class StoryRing {
-    NONE,      // Sin aro
-    RED,       // Aro rojo (p.ej. nuevo)
-    GREEN      // Aro verde (p.ej. en línea / activo)
+    NONE, //old
+    RED, //new
+    GREEN // seen
 }
 
 @Immutable
 data class StoryItem(
-    val id: String,
+    val idHistory: PostId,
+    val postId: PostId,
     val username: String,
     val avatarUrl: String,
     val ring: StoryRing
@@ -96,9 +100,9 @@ fun StoriesRow(
 
                 if (abs(available.x) > abs(available.y)) {
                     val draggingRight = available.x > 0f
-                    val draggingLeft  = available.x < 0f
+                    val draggingLeft = available.x < 0f
                     val atStart = !listState.canScrollBackward
-                    val atEnd   = !listState.canScrollForward
+                    val atEnd = !listState.canScrollForward
 
 
                     val shouldConsume =
@@ -116,9 +120,9 @@ fun StoriesRow(
             override suspend fun onPreFling(available: Velocity): Velocity {
                 if (abs(available.x) > abs(available.y)) {
                     val flingRight = available.x > 0f
-                    val flingLeft  = available.x < 0f
+                    val flingLeft = available.x < 0f
                     val atStart = !listState.canScrollBackward
-                    val atEnd   = !listState.canScrollForward
+                    val atEnd = !listState.canScrollForward
 
                     val shouldConsume =
                         (flingRight && atStart) || (flingLeft && atEnd)
@@ -152,7 +156,7 @@ fun StoriesRow(
 
         items(
             items = stories,
-            key = { it.id }
+            key = { it.idHistory.value }
         ) { item ->
             StoryAvatarWithLabel(
                 item = item,
@@ -176,7 +180,8 @@ private fun StoryAvatarWithLabel(
     onClickAdd: () -> Unit
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         StoryAvatar(
             imageUrl = item.avatarUrl,
@@ -191,6 +196,7 @@ private fun StoryAvatarWithLabel(
             text = item.username,
             style = MaterialTheme.typography.labelMedium,
             maxLines = 1,
+            textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .widthIn(min = 56.dp, max = 76.dp),
@@ -219,6 +225,7 @@ private fun StoryAvatar(
                 Color(0xFFE3003A)
             )
         )
+
         StoryRing.GREEN -> Brush.sweepGradient(
             colors = listOf(
                 Color(0xFF2ECC71),
@@ -229,7 +236,8 @@ private fun StoryAvatar(
 
     Box(
         modifier = Modifier
-            .size(size),
+            .size(size)
+            .clickableNoRipple(onClick),
         contentAlignment = Alignment.Center
     ) {
 

@@ -30,10 +30,15 @@ fun AppNavGraph(navController: NavHostController) {
         }
 
         composable(AppDestination.MainPager.route) {
-            MainPagerScreen (
+            MainPagerScreen(
                 onClickProfile = {
                     navController.navigate(
                         route = AppDestination.Profile.createRoute(userId = it)
+                    )
+                },
+                onClickStory = { postId ->
+                    navController.navigate(
+                        route = AppDestination.PhotoViewer.createRoute(postId, 0)
                     )
                 }
             )

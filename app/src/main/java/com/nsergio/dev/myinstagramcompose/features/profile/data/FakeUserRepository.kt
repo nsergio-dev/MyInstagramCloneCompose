@@ -17,11 +17,23 @@ class FakeUserRepository @Inject constructor() {
      */
     fun getUser(userId: UserId): User? {
         val user = if (userId == UserId("me")) {
-            fakeUsers.random()
+            getRandomUser()
         } else {
             fakeUsers.find { it.id == userId }
         }
         return user
+    }
+
+    fun getRandomUser(): User {
+        return fakeUsers.random()
+    }
+
+    fun getRandomUser(number: Int): List<User> {
+        return if (number > fakeUsers.count()) {
+            fakeUsers
+        } else {
+            fakeUsers.shuffled().take(number)
+        }
     }
 
 }
