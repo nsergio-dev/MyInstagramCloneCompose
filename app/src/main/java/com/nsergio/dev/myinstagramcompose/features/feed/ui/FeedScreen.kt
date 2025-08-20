@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,7 +16,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.nsergio.dev.myinstagramcompose.core.ui.components.StoriesRow
 import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryItem
 import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryRing
-import com.nsergio.dev.myinstagramcompose.features.common.fakeHistoriesItemsFeed
+import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostId
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.feed.presentation.FeedViewModel
 
@@ -22,9 +24,11 @@ import com.nsergio.dev.myinstagramcompose.features.feed.presentation.FeedViewMod
 fun FeedScreen(
     contentPadding: PaddingValues,
     viewModel: FeedViewModel = hiltViewModel(),
-    onClickProfile: (String) -> Unit
+    onClickProfile: (String) -> Unit,
+    onClickStory: (StoryItem) -> Unit
 ) {
     val posts: LazyPagingItems<PostWithMedia> = viewModel.posts.collectAsLazyPagingItems()
+    val stories by viewModel.stories.collectAsState()
 
     Box(
         modifier = Modifier
@@ -34,8 +38,12 @@ fun FeedScreen(
     ) {
         Posts(
             posts = posts,
+            stories = stories,
             onLikeToggle = viewModel::onLikeToggle,
-            onProfileClick = onClickProfile
+            onProfileClick = onClickProfile,
+            onClickStory = { storyItem ->
+                viewModel.updateStoryState(storyItem, onClickStory)
+            }
         )
     }
 }
@@ -43,20 +51,23 @@ fun FeedScreen(
 @Composable
 private fun Posts(
     posts: LazyPagingItems<PostWithMedia>,
+    stories: List<StoryItem> = emptyList(),
     onLikeToggle: (String) -> Unit,
-    onProfileClick: (String) -> Unit
+    onProfileClick: (String) -> Unit,
+    onClickStory: (StoryItem) -> Unit
 ) {
     LazyColumn {
         item {
             StoriesRow(
                 currentUser = StoryItem(
-                    id = "me",
-                    username = "Tu nombre",
+                    idHistory = PostId("me"),
+                    username = "Me",
+                    postId = PostId("me"),
                     avatarUrl = "https://randomuser.me/api/portraits/men/1.jpg",
                     ring = StoryRing.NONE
                 ),
-                stories = fakeHistoriesItemsFeed(),
-                onClickStory = { /* navegar a historia / perfil */ },
+                stories = stories,
+                onClickStory = onClickStory,
                 onClickAddStory = { /* abrir selector para crear historia */ }
             )
         }

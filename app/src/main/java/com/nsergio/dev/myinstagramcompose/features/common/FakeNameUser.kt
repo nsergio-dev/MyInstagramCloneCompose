@@ -1,5 +1,6 @@
 package com.nsergio.dev.myinstagramcompose.features.common
 
+import java.util.Locale
 import kotlin.random.Random
 
 object FakeNameUser {
@@ -24,16 +25,25 @@ object FakeNameUser {
         "Jiménez", "Vargas", "Mendoza", "Cortés", "Navarro", "Guerrero", "Romero", "Silva"
     )
 
-    fun getFullName(isFemale: Boolean = Random.nextBoolean()): String {
-        val lastName = lastNames.random().replaceFirstChar { it.lowercase() }
+    fun getFullName(isFemale: Boolean = Random.nextBoolean()): NameUser {
+        val lastName = lastNames.random()
+        var nickName: String
 
         val userName: String = if (isFemale) {
-            val name = femaleNames.random().replaceFirstChar { it.lowercase() }
-            "${name}_$lastName"
+            femaleNames.random()
         } else {
-            val name = maleNames.random().replaceFirstChar { it.lowercase() }
-            "${name}_$lastName"
+            maleNames.random()
         }
-        return userName
+
+        nickName = "${userName.lowercase(Locale.ROOT)}_${lastName.lowercase(Locale.ROOT)}"
+        return NameUser(
+            nickName = nickName,
+            realName = "$userName $lastName"
+        )
     }
 }
+
+data class NameUser(
+    val nickName: String,
+    val realName: String
+)

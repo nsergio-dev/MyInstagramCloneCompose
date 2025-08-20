@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainPagerScreen(
-    onClickProfile: (String) -> Unit
+    onClickProfile: (String) -> Unit,
+    onClickStory: (String) -> Unit
 ) {
     val pagerState = rememberPagerState(
         initialPage = MainPagerPage.Feed.ordinal,
@@ -69,6 +70,7 @@ fun MainPagerScreen(
                 page = page,
                 innerPadding = innerPadding,
                 onClickProfile = onClickProfile,
+                onClickStory = onClickStory,
                 onClickBack = {
                     scope.launch {
                         delay(150)
@@ -86,17 +88,22 @@ private fun MainPagerController(
     page: Int,
     onClickProfile: (String) -> Unit,
     onClickBack: () -> Unit,
+    onClickStory: (String) -> Unit,
 ) {
     when (page) {
 
         MainPagerPage.Feed.ordinal -> FeedScreen(
             contentPadding = innerPadding,
-            onClickProfile = onClickProfile
+            onClickProfile = onClickProfile,
+            onClickStory = { storyItem ->
+                onClickStory.invoke(storyItem.postId.value)
+            }
         )
 
         MainPagerPage.Chat.ordinal -> ChatScreen(
             username = "jhon_doe",
-            onClickBack = onClickBack
+            onClickBack = onClickBack,
+            onClickStory = onClickStory
         )
     }
 }

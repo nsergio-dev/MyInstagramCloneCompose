@@ -12,12 +12,18 @@ import kotlin.random.nextInt
 
 val fakeUsers = mutableListOf<User>()
 
-fun createUserWithMedia(
-    position: Int,
-    page: Int
-): User {
+fun insertUsersWithMedia(numberOfUsers: Int) {
+    repeat(numberOfUsers) {
+        val userWithPost = createUserWithMedia()
+        if (!fakeUsers.contains(userWithPost)) {
+            fakeUsers.add(userWithPost)
+        }
+    }
+}
 
-    val userId = UserId("user_${position}_page_${page}")
+fun createUserWithMedia(): User {
+
+    val userId = UserId(System.currentTimeMillis().toString())
     val user = createUser(userId)
 
     val postByUser = getListMedia(user)
@@ -62,7 +68,7 @@ private fun getListMedia(
     return postWithMedia
 }
 
-private fun createUser(userId: UserId): User {
+fun createUser(userId: UserId): User {
     val isFemale = Random.nextBoolean()
     val index = Random.nextInt(0..100)
     val userName = FakeNameUser.getFullName(isFemale)
@@ -74,35 +80,13 @@ private fun createUser(userId: UserId): User {
     }
     return User(
         id = userId,
-        name = userName,
+        name = userName.nickName,
+        realName = userName.realName,
         avatarUrl = avatarUrl,
         bio = "Just a mock bio for Name ${userId.value}. Lorem ipsum dolor sit amet…",
         followers = Random.nextInt(1_000, 20_000),
         following = Random.nextInt(100, 900)
     )
-}
-
-fun fakeHistoriesItemsFeed(): List<StoryItem> {
-
-    val sizeList = Random.nextInt(10..20)
-
-    return List(sizeList) { index ->
-        val isFemale = Random.nextBoolean()
-        val userName: String = FakeNameUser.getFullName(isFemale)
-
-        val imageUser: String = if (isFemale) {
-            "https://randomuser.me/api/portraits/women/${index + 1}.jpg"
-        } else {
-            "https://randomuser.me/api/portraits/men/${index + 1}.jpg"
-        }
-
-        StoryItem(
-            id = "id_$index",
-            username = userName,
-            avatarUrl = imageUser,
-            ring = StoryRing.entries.random()
-        )
-    }.sortedByDescending { it.ring }
 }
 
 private const val MILLIS_IN_MIN = 60_000L

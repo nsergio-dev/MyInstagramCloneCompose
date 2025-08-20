@@ -20,7 +20,7 @@ class PostPagingSource() : PagingSource<Int, PostWithMedia>() {
 
         val page = params.key ?: 0
         val size = params.loadSize
-        val posts = getMockPosts(size, page)
+        val posts = getMockPosts(size)
 
         val resultPosts = loadedResult(posts, page)
 
@@ -36,13 +36,10 @@ class PostPagingSource() : PagingSource<Int, PostWithMedia>() {
         nextKey = page + 1
     )
 
-    private fun getMockPosts(
-        size: Int,
-        page: Int
-    ): List<PostWithMedia> {
+    private fun getMockPosts(size: Int): List<PostWithMedia> {
 
-        for (index in 0..size) {
-            val userWithPost = createUserWithMedia(index, page)
+        repeat (size) {
+            val userWithPost = createUserWithMedia()
 
             if (!fakeUsers.contains(userWithPost)) {
                 fakeUsers.add(userWithPost)

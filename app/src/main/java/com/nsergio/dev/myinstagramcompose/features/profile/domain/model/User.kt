@@ -13,6 +13,7 @@ value class UserId(val value: String)
 data class User(
     val id: UserId,
     val name: String,
+    val realName: String,
     val avatarUrl: String,
     val bio: String,
     val followers: Int,
