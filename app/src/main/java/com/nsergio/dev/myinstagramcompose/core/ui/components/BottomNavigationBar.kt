@@ -22,6 +22,7 @@ import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 fun BottomNavigationBar(
     currentPage: Int,
     onSelectedPage: (Int) -> Unit,
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
 ) {
 
@@ -37,7 +38,7 @@ fun BottomNavigationBar(
         )
         NavigationBarItem(
             selected = currentPage == 1,
-            onClick = { onSelectedPage.invoke(1) },
+            onClick = { onExploreClick.invoke() },
             icon = { Icon(Icons.Default.Search, contentDescription = "Search") }
         )
         NavigationBarItem(

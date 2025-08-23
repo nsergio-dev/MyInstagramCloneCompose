@@ -8,6 +8,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.nsergio.dev.myinstagramcompose.core.ui.components.MainPagerScreen
 import com.nsergio.dev.myinstagramcompose.features.auth.login.ui.LoginScreen
+import com.nsergio.dev.myinstagramcompose.features.explore.presentation.ExploreRoute
+import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerImageScreen
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerScreen
 import com.nsergio.dev.myinstagramcompose.features.profile.ui.ProfileScreen
 
@@ -29,8 +31,22 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
+        composable(AppDestination.Explore.route) {
+            ExploreRoute(
+                onBackClick = { navController.popBackStack() },
+                onPhotoClick = { url ->
+                    navController.navigate(
+                        route = AppDestination.ExploreViewer.createRoute(url)
+                    )
+                }
+            )
+        }
+
         composable(AppDestination.MainPager.route) {
             MainPagerScreen(
+                onExploreClick = {
+                    navController.navigate(AppDestination.Explore.route)
+                },
                 onClickProfile = {
                     navController.navigate(
                         route = AppDestination.Profile.createRoute(userId = it)
@@ -73,6 +89,17 @@ fun AppNavGraph(navController: NavHostController) {
                 postId = postId,
                 index = index,
                 onClose = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = AppDestination.ExploreViewer.route,
+            arguments = listOf(navArgument("url") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url") ?: return@composable
+            PhotoViewerImageScreen(
+                imageUrl = url,
+                onBack = { navController.popBackStack() }
             )
         }
     }
