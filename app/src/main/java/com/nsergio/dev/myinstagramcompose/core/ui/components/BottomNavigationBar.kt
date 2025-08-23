@@ -23,6 +23,7 @@ fun BottomNavigationBar(
     currentPage: Int,
     onSelectedPage: (Int) -> Unit,
     onExploreClick: () -> Unit = {},
+    onReelsClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
 ) {
 
@@ -48,7 +49,7 @@ fun BottomNavigationBar(
         )
         NavigationBarItem(
             selected = currentPage == 3,
-            onClick = { onSelectedPage.invoke(3) },
+            onClick = { onReelsClick.invoke() },
             icon = { Icon(Icons.Default.VideoLibrary, contentDescription = "Reels") }
         )
         NavigationBarItem(

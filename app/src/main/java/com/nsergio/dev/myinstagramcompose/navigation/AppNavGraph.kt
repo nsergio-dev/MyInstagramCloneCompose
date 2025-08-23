@@ -12,6 +12,7 @@ import com.nsergio.dev.myinstagramcompose.features.explore.presentation.ExploreR
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerImageScreen
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerScreen
 import com.nsergio.dev.myinstagramcompose.features.profile.ui.ProfileScreen
+import com.nsergio.dev.myinstagramcompose.features.reels.ui.ReelsScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -56,6 +57,9 @@ fun AppNavGraph(navController: NavHostController) {
                     navController.navigate(
                         route = AppDestination.PhotoViewer.createRoute(postId, 0)
                     )
+                },
+                onReelsClick = {
+                    navController.navigate(AppDestination.Reels.route)
                 }
             )
         }
@@ -102,5 +106,12 @@ fun AppNavGraph(navController: NavHostController) {
                 onBack = { navController.popBackStack() }
             )
         }
+
+        composable(AppDestination.Reels.route) {
+            ReelsScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
     }
 }

@@ -19,8 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -47,8 +45,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
+import com.nsergio.dev.myinstagramcompose.core.ui.components.CommentsButton
 import com.nsergio.dev.myinstagramcompose.core.ui.components.LikeButton
 import com.nsergio.dev.myinstagramcompose.core.ui.components.RemoteAsyncImage
+import com.nsergio.dev.myinstagramcompose.core.ui.components.ShareButton
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
@@ -224,20 +224,21 @@ private fun PostActions(
         modifier = Modifier
             .fillMaxWidth()
             .padding(DimensDP.DP12.dp),
-        horizontalArrangement = Arrangement.spacedBy(DimensDP.DP16.dp)
+        horizontalArrangement = Arrangement.spacedBy(DimensDP.DP16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        ActionIconText(
+        HorizontalActionIconText(
             icon = {
                 LikeButton(liked = liked, onToggle = onLike)
             },
             text = (likes + if (liked) 1 else 0).toString()
         )
-        ActionIconText(
-            icon = { Icon(Icons.Outlined.ChatBubbleOutline, null) },
+        HorizontalActionIconText(
+            icon = { CommentsButton() },
             text = comments.toString()
         )
-        ActionIconText(
-            icon = { Icon(Icons.Outlined.Send, null) },
+        HorizontalActionIconText(
+            icon = { ShareButton() },
             text = shares.toString()
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -252,7 +253,7 @@ private fun PostActions(
  * @param text Label to display next to the icon
  */
 @Composable
-private fun ActionIconText(
+fun HorizontalActionIconText(
     icon: @Composable () -> Unit,
     text: String
 ) {
@@ -264,13 +265,36 @@ private fun ActionIconText(
 }
 
 /**
+ * Helper composable that shows an icon followed by a label.
+ *
+ * @param icon Icon to display
+ * @param text Label to display next to the icon
+ */
+@Composable
+fun VerticalActionIconText(
+    icon: @Composable () -> Unit,
+    text: String,
+    textColor: Color = Color.Unspecified
+) {
+    Column(
+        modifier = Modifier
+            .padding(end = DimensDP.DP12.dp, bottom = DimensDP.DP24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        icon()
+        Spacer(Modifier.width(DimensDP.DP4.dp))
+        Text(text, style = MaterialTheme.typography.bodySmall, color = textColor)
+    }
+}
+
+/**
  * Caption with “see more” behaviour.
  *
  * @param user Display name of the author
  * @param caption Full caption text
  */
 @Composable
-private fun UserNameAndCaption(
+fun UserNameAndCaption(
     user: String,
     caption: String
 ) {

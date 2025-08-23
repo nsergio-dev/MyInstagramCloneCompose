@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainPagerScreen(
     onExploreClick: () -> Unit,
+    onReelsClick: () -> Unit,
     onClickProfile: (String) -> Unit,
     onClickStory: (String) -> Unit
 ) {
@@ -58,6 +59,7 @@ fun MainPagerScreen(
                     }
                 },
                 onExploreClick = onExploreClick,
+                onReelsClick = onReelsClick,
                 onProfileClick = {
                     onClickProfile.invoke("me")
                 }
