@@ -35,9 +35,6 @@ fun PostGrid(
         contentPadding = PaddingValues(DimensDP.DP1.dp)
     ) {
         items(posts) { post ->
-            //val url = "https://picsum.photos/seed/${userId}_$index/300/300"
-            //val postId = "${userId}_$index"              // id único por miniatura
-            //val url = "https://picsum.photos/seed/$postId/300/300"
             val firsImage = post.media.first()
             UserProfileImage(
                 url = firsImage.url,

@@ -20,6 +20,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "PICSUM_BASE_URL", "\"https://picsum.photos/seed\"")
+        buildConfigField("String", "RANDOM_USER_BASE_URL", "\"https://randomuser.me/api/portraits\"")
+
     }
 
     buildTypes {
@@ -40,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

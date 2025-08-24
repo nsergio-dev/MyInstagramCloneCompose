@@ -83,9 +83,7 @@ fun CreatePostScreen(
     }
 
     Scaffold(
-        // 👇 fondo general negro
         containerColor = Color.Black,
-        // 👇 no apliques insets automáticos: así el contenido va "debajo" del topBar
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(

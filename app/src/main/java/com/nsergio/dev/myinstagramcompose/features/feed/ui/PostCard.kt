@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -54,6 +54,7 @@ import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 
 
 /**
@@ -109,6 +110,8 @@ private fun PostImage(
 
     val imageUrl = imageUrls[startIndex]
 
+    var aspect by remember { mutableStateOf(1f) }
+
 
     /* Auto-hide heart after 400 ms */
     if (showHeart) {
@@ -120,7 +123,7 @@ private fun PostImage(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(DimensDP.DP300.dp)
+            .aspectRatio(aspect)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
@@ -135,6 +138,13 @@ private fun PostImage(
             model = imageUrl,
             crossfade = true,
             content = {
+                val size = it.intrinsicSize
+                if (size.width.isFinite() && size.height.isFinite() && size.height > 0f) {
+                    val newAspect = (size.width / size.height)
+                    if (abs(newAspect - aspect) > 0.01f) {
+                        aspect = newAspect
+                    }
+                }
                 Image(
                     contentDescription = null,
                     modifier = Modifier

@@ -2,6 +2,7 @@ package com.nsergio.dev.myinstagramcompose.features.create_post.presentation
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.nsergio.dev.myinstagramcompose.core.utils.ImageUrlHelper
 import com.nsergio.dev.myinstagramcompose.features.common.fakeUsers
 import com.nsergio.dev.myinstagramcompose.features.feed.data.LocalFeedOverlay
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Media
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.random.Random
 
 data class CreatePostState(
     val previewUri: Uri? = null,
@@ -25,7 +27,8 @@ data class CreatePostState(
 
 @HiltViewModel
 class CreatePostViewModel @Inject constructor(
-    private val overlay: LocalFeedOverlay
+    private val overlay: LocalFeedOverlay,
+    private val imageHelper: ImageUrlHelper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CreatePostState())
@@ -72,11 +75,12 @@ class CreatePostViewModel @Inject constructor(
     private fun ensureMeUser(): Int {
         val idx = fakeUsers.indexOfFirst { it.id.value == "me" }
         if (idx >= 0) return idx
+        val female = Random.nextBoolean()
         val newMe = User(
             id = UserId("me"),
             name = "me",
             realName = "Me",
-            avatarUrl = "https://i.pravatar.cc/150?u=me",
+            avatarUrl = imageHelper.createRandomUserImageUrl(female),
             bio = "Hi!",
             followers = 0,
             following = 0,
