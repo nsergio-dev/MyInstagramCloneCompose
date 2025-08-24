@@ -29,6 +29,7 @@ fun FeedScreen(
 ) {
     val posts: LazyPagingItems<PostWithMedia> = viewModel.posts.collectAsLazyPagingItems()
     val stories by viewModel.stories.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
 
     Box(
         modifier = Modifier
@@ -39,6 +40,7 @@ fun FeedScreen(
         Posts(
             posts = posts,
             stories = stories,
+            currentUserAvatarUrl = currentUser?.avatarUrl.orEmpty(),
             onLikeToggle = viewModel::onLikeToggle,
             onProfileClick = onClickProfile,
             onClickStory = { storyItem ->
@@ -50,6 +52,7 @@ fun FeedScreen(
 
 @Composable
 private fun Posts(
+    currentUserAvatarUrl: String,
     posts: LazyPagingItems<PostWithMedia>,
     stories: List<StoryItem> = emptyList(),
     onLikeToggle: (String) -> Unit,
@@ -63,7 +66,7 @@ private fun Posts(
                     idHistory = PostId("me"),
                     username = "Me",
                     postId = PostId("me"),
-                    avatarUrl = "https://randomuser.me/api/portraits/men/1.jpg",
+                    avatarUrl = currentUserAvatarUrl,
                     ring = StoryRing.NONE
                 ),
                 stories = stories,

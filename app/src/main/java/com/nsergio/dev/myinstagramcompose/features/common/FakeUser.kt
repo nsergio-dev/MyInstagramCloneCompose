@@ -21,6 +21,22 @@ fun insertUsersWithMedia(numberOfUsers: Int) {
     }
 }
 
+fun createMeUser() {
+
+    val userId = UserId("me")
+
+    val user = createUser(userId)
+
+    val postByUser = getListMedia(user)
+
+    val userWitMedia = user.copy(posts = postByUser)
+
+    if (!fakeUsers.contains(userWitMedia)) {
+        fakeUsers.add(userWitMedia)
+    }
+
+}
+
 fun createUserWithMedia(): User {
 
     val userId = UserId(System.currentTimeMillis().toString())

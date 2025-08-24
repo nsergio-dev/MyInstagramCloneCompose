@@ -29,6 +29,8 @@ sealed class AppDestination(val route: String) {
         fun createRoute(postId: String, index: Int) = "photo/$postId/$index"
     }
 
+    object CreatePost : AppDestination("createPost")
+
     object Reels : AppDestination("reels")
 
 }

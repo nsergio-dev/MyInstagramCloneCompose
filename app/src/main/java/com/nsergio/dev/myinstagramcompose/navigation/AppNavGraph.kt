@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.nsergio.dev.myinstagramcompose.core.ui.components.MainPagerScreen
 import com.nsergio.dev.myinstagramcompose.features.auth.login.ui.LoginScreen
+import com.nsergio.dev.myinstagramcompose.features.create_post.ui.CreatePostScreen
 import com.nsergio.dev.myinstagramcompose.features.explore.presentation.ExploreRoute
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerImageScreen
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerScreen
@@ -58,6 +59,9 @@ fun AppNavGraph(navController: NavHostController) {
                         route = AppDestination.PhotoViewer.createRoute(postId, 0)
                     )
                 },
+                onCreatePostClick = {
+                    navController.navigate(AppDestination.CreatePost.route)
+                },
                 onReelsClick = {
                     navController.navigate(AppDestination.Reels.route)
                 }
@@ -103,6 +107,12 @@ fun AppNavGraph(navController: NavHostController) {
             val url = backStackEntry.arguments?.getString("url") ?: return@composable
             PhotoViewerImageScreen(
                 imageUrl = url,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(AppDestination.CreatePost.route) {
+            CreatePostScreen(
                 onBack = { navController.popBackStack() }
             )
         }

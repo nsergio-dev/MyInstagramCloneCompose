@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.VideoLibrary
@@ -20,9 +20,11 @@ import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 
 @Composable
 fun BottomNavigationBar(
+    avatarUserUrl: String,
     currentPage: Int,
     onSelectedPage: (Int) -> Unit,
     onExploreClick: () -> Unit = {},
+    onCreatePostClick: () -> Unit = {},
     onReelsClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
 ) {
@@ -44,8 +46,8 @@ fun BottomNavigationBar(
         )
         NavigationBarItem(
             selected = currentPage == 2,
-            onClick = { onSelectedPage.invoke(2) },
-            icon = { Icon(Icons.Default.Add, contentDescription = "Add") }
+            onClick = { onCreatePostClick.invoke() },
+            icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "More") }
         )
         NavigationBarItem(
             selected = currentPage == 3,
@@ -60,7 +62,7 @@ fun BottomNavigationBar(
             },
             icon = {
                 Image(
-                    painter = rememberAsyncImagePainter("https://randomuser.me/api/portraits/men/1.jpg"),
+                    painter = rememberAsyncImagePainter(avatarUserUrl),
                     contentDescription = "Profile",
                     modifier = Modifier
                         .size(DimensDP.DP24.dp)

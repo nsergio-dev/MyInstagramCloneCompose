@@ -5,17 +5,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertHeaderItem
 import androidx.paging.map
 import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryItem
 import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryRing
+import com.nsergio.dev.myinstagramcompose.features.common.fakeUsers
+import com.nsergio.dev.myinstagramcompose.features.feed.data.LocalFeedOverlay
 import com.nsergio.dev.myinstagramcompose.features.feed.data.StoriesRepository
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.usecase.GetPostsUseCase
+import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.User
+import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.UserId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -23,11 +29,20 @@ import javax.inject.Inject
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     getPosts: GetPostsUseCase,
-    storiesRepository: StoriesRepository
+    storiesRepository: StoriesRepository,
+    private val overlay: LocalFeedOverlay
 ) : ViewModel() {
 
     private val pagingFlow = getPosts.invoke().cachedIn(viewModelScope)
     private val seenStories = MutableStateFlow<Map<String, StoryRing>>(emptyMap())
+
+    val currentUser: StateFlow<User?> = flow {
+        emit(fakeUsers.find { it.id == UserId("me") })
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
 
     /**
      * Set of post IDs the user has liked in this session.
@@ -60,16 +75,19 @@ class FeedViewModel @Inject constructor(
      */
     val posts: StateFlow<PagingData<PostWithMedia>> = combine(
         pagingFlow,
-        likedIds
-    ) { paging, likes ->
-        val postsLikedByMe = paging.map { postWithMedia ->
-            val postLikedByMe = likes.contains(postWithMedia.id.value)
-            postWithMedia.copy(likedByMe = postLikedByMe)
-        }
+        likedIds,
+        overlay.headPosts
+    ) { paging, likes, userPosts ->
+            var paged = paging.map { it.copy(likedByMe = likes.contains(it.id.value)) }
 
-        postsLikedByMe
+            val postsUserMapped = userPosts.map { it.copy(likedByMe = likes.contains(it.id.value)) }
 
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, PagingData.empty())
+        postsUserMapped.asReversed().forEach { header ->
+                paged = paged.insertHeaderItem(item = header)
+            }
+            paged
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, PagingData.empty())
+
 
     /**
      * Toggles like for the given post ID.
