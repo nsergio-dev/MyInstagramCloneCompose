@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.nsergio.dev.myinstagramcompose.core.ui.components.MainPagerScreen
 import com.nsergio.dev.myinstagramcompose.features.auth.login.ui.LoginScreen
+import com.nsergio.dev.myinstagramcompose.features.chat.ui.ChatDetailScreen
 import com.nsergio.dev.myinstagramcompose.features.create_post.ui.CreatePostScreen
 import com.nsergio.dev.myinstagramcompose.features.explore.presentation.ExploreRoute
 import com.nsergio.dev.myinstagramcompose.features.photo_preview.ui.PhotoViewerImageScreen
@@ -61,6 +62,11 @@ fun AppNavGraph(navController: NavHostController) {
                 onCreatePostClick = {
                     navController.navigate(AppDestination.CreatePost)
                 },
+                onOpenConversation = { userId ->
+                    navController.navigate(
+                        route = AppDestination.ChatDetail(userId)
+                    )
+                },
                 onReelsClick = {
                     navController.navigate(AppDestination.Reels)
                 }
@@ -80,6 +86,24 @@ fun AppNavGraph(navController: NavHostController) {
                     )
                 },
                 onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable<AppDestination.ChatDetail> { backStackEntry ->
+
+            val screen: AppDestination.ChatDetail = backStackEntry
+                .toRoute<AppDestination.ChatDetail>()
+
+            val userId = screen.userId
+
+            ChatDetailScreen(
+                userId = userId,
+                onBack = { navController.popBackStack() },
+                onUserProfile = {
+                    navController.navigate(
+                        route = AppDestination.Profile(userId = userId)
+                    )
+                }
             )
         }
 

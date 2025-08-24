@@ -3,6 +3,7 @@ package com.nsergio.dev.myinstagramcompose.features.create_post.presentation
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.nsergio.dev.myinstagramcompose.core.utils.ImageUrlHelper
+import com.nsergio.dev.myinstagramcompose.core.utils.Utils
 import com.nsergio.dev.myinstagramcompose.features.common.fakeUsers
 import com.nsergio.dev.myinstagramcompose.features.feed.data.LocalFeedOverlay
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Media
@@ -48,7 +49,7 @@ class CreatePostViewModel @Inject constructor(
         val me = fakeUsers[meIndex]
 
         val newPost = PostWithMedia(
-            id = PostId(UUID.randomUUID().toString()),
+            id = PostId(Utils.generateRandomString()),
             authorId = me.id,
             authorName = me.name,
             authorAvatarUrl = me.avatarUrl,
@@ -59,7 +60,7 @@ class CreatePostViewModel @Inject constructor(
             likeCount = 0,
             commentCount = 0,
             shareCount = 0,
-            createdAt = System.currentTimeMillis(),
+            createdAt = Utils.generateRandomFloat(),
             likedByMe = false
         )
 

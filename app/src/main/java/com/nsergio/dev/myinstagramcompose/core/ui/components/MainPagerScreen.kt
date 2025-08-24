@@ -22,6 +22,7 @@ fun MainPagerScreen(
     onCreatePostClick: () -> Unit,
     onReelsClick: () -> Unit,
     onClickProfile: (String) -> Unit,
+    onOpenConversation: (String) -> Unit,
     onClickStory: (String) -> Unit
 ) {
     //create viewModel with hilt for better performance
@@ -81,6 +82,7 @@ fun MainPagerScreen(
                 page = page,
                 innerPadding = innerPadding,
                 onClickProfile = onClickProfile,
+                onOpenConversation = onOpenConversation,
                 onClickStory = onClickStory,
                 onClickBack = {
                     scope.launch {
@@ -100,6 +102,7 @@ private fun MainPagerController(
     onClickProfile: (String) -> Unit,
     onClickBack: () -> Unit,
     onClickStory: (String) -> Unit,
+    onOpenConversation: (String) -> Unit
 ) {
     when (page) {
 
@@ -112,8 +115,13 @@ private fun MainPagerController(
         )
 
         MainPagerPage.Chat.ordinal -> ChatScreen(
-            username = "jhon_doe",
-            onClickBack = onClickBack,
+            contentPadding = innerPadding,
+            onBack = onClickBack,
+            onOpenRequests = { /* TODO: navegar a solicitudes */ },
+            onOpenComposer = { /* TODO: abrir nuevo mensaje */ },
+            onClickStory = onClickStory,
+            onOpenConversation = onOpenConversation,
+            onOpenCamera = { userId -> /* TODO: abrir cámara para ese userId */ }
         )
     }
 }

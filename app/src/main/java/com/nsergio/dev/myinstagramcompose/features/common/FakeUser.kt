@@ -1,6 +1,7 @@
 package com.nsergio.dev.myinstagramcompose.features.common
 
 import com.nsergio.dev.myinstagramcompose.core.utils.ImageUrlHelper
+import com.nsergio.dev.myinstagramcompose.core.utils.Utils
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Media
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostId
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
@@ -37,7 +38,7 @@ fun createMeUser() {
 
 fun createUserWithMedia(): User {
 
-    val userId = UserId(System.currentTimeMillis().toString())
+    val userId = UserId(Utils.generateRandomString())
     val user = createUser(userId)
 
     val postByUser = getListMedia(user)
@@ -75,7 +76,7 @@ private fun getListMedia(
             likeCount = Random.nextInt(10, 1_000),
             commentCount = Random.nextInt(0, 200),
             shareCount = Random.nextInt(0, 100),
-            createdAt = System.currentTimeMillis() -
+            createdAt = Utils.generateRandomFloat() -
                     Random.nextLong(MILLIS_IN_HOUR, 7 * MILLIS_IN_DAY + 1)
         )
     }

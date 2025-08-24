@@ -18,6 +18,9 @@ sealed class AppDestination {
     data class Profile(val userId: String)
 
     @Serializable
+    data class ChatDetail(val userId: String)
+
+    @Serializable
     object Explore
 
     @Serializable
