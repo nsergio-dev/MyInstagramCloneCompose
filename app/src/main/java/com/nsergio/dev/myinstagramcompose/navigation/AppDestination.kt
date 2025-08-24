@@ -1,36 +1,35 @@
 package com.nsergio.dev.myinstagramcompose.navigation
 
-import android.net.Uri.encode
+import kotlinx.serialization.Serializable
 
 /**
  * All top-level routes in the app.
  */
-sealed class AppDestination(val route: String) {
+sealed class AppDestination {
 
-    /** Login screen (start). */
-    object Login : AppDestination("login")
+    //object cause not need arguments required
+    @Serializable
+    object Login
 
-    /** Feed after successful login. */
-    object MainPager  : AppDestination("main_pager")
+    @Serializable
+    object MainPager
 
-    object Profile : AppDestination("profile/{userId}") {
-        fun createRoute(userId: String) = "profile/$userId"
-    }
+    @Serializable
+    data class Profile(val userId: String)
 
-    object Explore : AppDestination("explore")
+    @Serializable
+    object Explore
 
-    object ExploreViewer : AppDestination("explore/viewer/{url}") {
-        fun createRoute(imageUrl: String): String {
-            return "explore/viewer/${encode(imageUrl)}"
-        }
-    }
+    @Serializable
+    data class ExploreViewer(val imageUrl: String)
 
-    object PhotoViewer : AppDestination("photo/{postId}/{index}") {
-        fun createRoute(postId: String, index: Int) = "photo/$postId/$index"
-    }
+    @Serializable
+    data class PhotoViewer(val postId: String, val index: Int)
 
-    object CreatePost : AppDestination("createPost")
+    @Serializable
+    object CreatePost
 
-    object Reels : AppDestination("reels")
+    @Serializable
+    object Reels
 
 }

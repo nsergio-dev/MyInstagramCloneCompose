@@ -2,10 +2,9 @@ package com.nsergio.dev.myinstagramcompose.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.nsergio.dev.myinstagramcompose.core.ui.components.MainPagerScreen
 import com.nsergio.dev.myinstagramcompose.features.auth.login.ui.LoginScreen
 import com.nsergio.dev.myinstagramcompose.features.create_post.ui.CreatePostScreen
@@ -20,79 +19,78 @@ fun AppNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = AppDestination.Login.route
+        startDestination = AppDestination.Login
     ) {
 
-        composable(AppDestination.Login.route) {
+        composable<AppDestination.Login> {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate(AppDestination.MainPager.route) {
-                        popUpTo(AppDestination.Login.route) { inclusive = true }
+                    navController.navigate(AppDestination.MainPager) {
+                        popUpTo(AppDestination.Login) { inclusive = true }
                     }
                 }
             )
         }
 
-        composable(AppDestination.Explore.route) {
+        composable<AppDestination.Explore> { backStackEntry ->
             ExploreRoute(
                 onBackClick = { navController.popBackStack() },
                 onPhotoClick = { url ->
                     navController.navigate(
-                        route = AppDestination.ExploreViewer.createRoute(url)
+                        route = AppDestination.ExploreViewer(url)
                     )
                 }
             )
         }
 
-        composable(AppDestination.MainPager.route) {
+        composable<AppDestination.MainPager> {
             MainPagerScreen(
                 onExploreClick = {
-                    navController.navigate(AppDestination.Explore.route)
+                    navController.navigate(AppDestination.Explore)
                 },
                 onClickProfile = {
                     navController.navigate(
-                        route = AppDestination.Profile.createRoute(userId = it)
+                        route = AppDestination.Profile(userId = it)
                     )
                 },
                 onClickStory = { postId ->
                     navController.navigate(
-                        route = AppDestination.PhotoViewer.createRoute(postId, 0)
+                        route = AppDestination.PhotoViewer(postId, 0)
                     )
                 },
                 onCreatePostClick = {
-                    navController.navigate(AppDestination.CreatePost.route)
+                    navController.navigate(AppDestination.CreatePost)
                 },
                 onReelsClick = {
-                    navController.navigate(AppDestination.Reels.route)
+                    navController.navigate(AppDestination.Reels)
                 }
             )
         }
 
-        composable(
-            route = AppDestination.Profile.route,
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId") ?: "me"
+        composable<AppDestination.Profile> { backStackEntry ->
+            val objectDetail: AppDestination.Profile = backStackEntry
+                .toRoute<AppDestination.Profile>()
+
+            val userId = objectDetail.userId
             ProfileScreen(
                 userId = userId,
                 onClickImageDetail = { postId, index ->
                     navController.navigate(
-                        route = AppDestination.PhotoViewer.createRoute(postId, index)
+                        route = AppDestination.PhotoViewer(postId, index)
                     )
                 },
                 onBackClick = { navController.popBackStack() }
             )
         }
 
-        composable(
-            route = AppDestination.PhotoViewer.route,
-            arguments = listOf(
-                navArgument("postId") { type = NavType.StringType },
-                navArgument("index") { type = NavType.IntType }
-            )
-        ) { entry ->
-            val postId = entry.arguments?.getString("postId").orEmpty()
-            val index = entry.arguments?.getInt("index") ?: 0
+        composable<AppDestination.PhotoViewer> { backStackEntry ->
+
+            val screen: AppDestination.PhotoViewer = backStackEntry
+                .toRoute<AppDestination.PhotoViewer>()
+
+            val postId = screen.postId
+            val index = screen.index
+
             PhotoViewerScreen(
                 postId = postId,
                 index = index,
@@ -100,24 +98,25 @@ fun AppNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(
-            route = AppDestination.ExploreViewer.route,
-            arguments = listOf(navArgument("url") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val url = backStackEntry.arguments?.getString("url") ?: return@composable
+        composable<AppDestination.ExploreViewer> { backStackEntry ->
+
+            val screen: AppDestination.ExploreViewer = backStackEntry
+                .toRoute<AppDestination.ExploreViewer>()
+
+            val url = screen.imageUrl
             PhotoViewerImageScreen(
                 imageUrl = url,
                 onBack = { navController.popBackStack() }
             )
         }
 
-        composable(AppDestination.CreatePost.route) {
+        composable<AppDestination.CreatePost> {
             CreatePostScreen(
                 onBack = { navController.popBackStack() }
             )
         }
 
-        composable(AppDestination.Reels.route) {
+        composable<AppDestination.Reels> {
             ReelsScreen(
                 onBack = { navController.popBackStack() }
             )
