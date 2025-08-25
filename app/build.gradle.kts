@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.hilt.android)
     //ksp
     alias(libs.plugins.ksp)
+    //kover
+    id("kover")
 }
 
 android {
