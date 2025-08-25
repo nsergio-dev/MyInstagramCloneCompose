@@ -19,6 +19,12 @@ pagingCompose = "3.3.6"
 room = "2.7.0"
 coroutines = "1.9.0"
 ksp = "2.0.21-1.0.28"
+# for unit test
+turbine = "1.1.0"
+kotlinxCoroutinesTest = "1.9.0"
+coreTesting = "2.1.0"
+mockk = "1.14.5"
+pagingCommon = "3.3.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,7 +66,13 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 # coroutine
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
-
+# for unit test
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "pagingCommon" }
+androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingCommon" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
