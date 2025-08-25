@@ -16,13 +16,13 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     /**
      * State for email input
      */
-    private val _email: MutableStateFlow<String> = MutableStateFlow("cb")
+    private val _email: MutableStateFlow<String> = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
     /**
      * State for password input
      */
-    private val _password: MutableStateFlow<String> = MutableStateFlow("cc")
+    private val _password: MutableStateFlow<String> = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
     /**

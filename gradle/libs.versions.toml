@@ -25,6 +25,8 @@ kotlinxCoroutinesTest = "1.9.0"
 coreTesting = "2.1.0"
 mockk = "1.14.5"
 pagingCommon = "3.3.2"
+# splash
+splashVersion = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -73,6 +75,10 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "pagingCommon" }
 androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingCommon" }
+
+# splash
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashVersion" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

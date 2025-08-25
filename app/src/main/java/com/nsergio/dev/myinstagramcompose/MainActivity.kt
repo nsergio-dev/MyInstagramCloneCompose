@@ -4,26 +4,38 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.nsergio.dev.myinstagramcompose.core.ui.theme.MyInstagramTheme
-import com.nsergio.dev.myinstagramcompose.features.common.createMeUser
-import com.nsergio.dev.myinstagramcompose.features.common.insertUsersWithMedia
+import com.nsergio.dev.myinstagramcompose.features.common.StartupViewModel
 import com.nsergio.dev.myinstagramcompose.navigation.AppNavGraph
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.random.Random
-import kotlin.random.nextInt
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: StartupViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val splash = installSplashScreen()
+
         super.onCreate(savedInstanceState)
+
+        splash.setKeepOnScreenCondition { viewModel.isLoading.value }
+
+        lifecycleScope.launch {
+            viewModel.startup()
+        }
+
         enableEdgeToEdge()
-        createMeUser()
         setContent {
             MyInstagramTheme {
                 val navController = rememberNavController()
                 AppNavGraph(navController = navController)
-                insertUsersWithMedia(Random.nextInt(15..25))
             }
         }
     }

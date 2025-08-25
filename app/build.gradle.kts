@@ -89,6 +89,9 @@ dependencies {
     // lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    // splash
+    implementation(libs.androidx.core.splashscreen)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)
