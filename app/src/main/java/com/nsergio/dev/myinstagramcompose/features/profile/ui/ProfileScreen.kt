@@ -96,7 +96,9 @@ private fun ProfileHeader(user: User) {
     ) {
         CircularAvatar(imageUrl = user.avatarUrl)
         Spacer(Modifier.height(DimensDP.DP12.dp))
-        UsernameText(name = user.name)
+        UserRealNameText(name = user.realName)
+        Spacer(Modifier.height(DimensDP.DP12.dp))
+        UserNameText(name = user.name)
         Spacer(Modifier.height(DimensDP.DP8.dp))
         StatsRow(
             posts = user.posts.count(),
@@ -114,10 +116,17 @@ private fun ProfileHeader(user: User) {
  * @param name Username to display
  */
 @Composable
-fun UsernameText(name: String) {
+fun UserNameText(name: String) {
     Text(
         text = name,
         style = MaterialTheme.typography.bodyMedium
+    )
+}
+@Composable
+fun UserRealNameText(name: String) {
+    Text(
+        text = name,
+        style = MaterialTheme.typography.titleLarge
     )
 }
 

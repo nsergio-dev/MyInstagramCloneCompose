@@ -16,11 +16,7 @@ class FakeUserRepository @Inject constructor() {
      * @param userId Id of the user to load
      */
     fun getUser(userId: UserId): User? {
-        val user = if (userId == UserId("me")) {
-            getRandomUser()
-        } else {
-            fakeUsers.find { it.id == userId }
-        }
+        val user = fakeUsers.find { it.id == userId }
         return user
     }
 

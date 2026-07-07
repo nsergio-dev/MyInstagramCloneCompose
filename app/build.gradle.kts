@@ -2,10 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    //serialization
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    //parcelize
+    alias(libs.plugins.kotlin.parcelize)
     //hilt
     alias(libs.plugins.hilt.android)
     //ksp
     alias(libs.plugins.ksp)
+    //kover
+    id("kover")
 }
 
 android {
@@ -20,6 +26,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "PICSUM_BASE_URL", "\"https://picsum.photos/seed\"")
+        buildConfigField("String", "RANDOM_USER_BASE_URL", "\"https://randomuser.me/api/portraits\"")
+
     }
 
     buildTypes {
@@ -40,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -57,6 +68,7 @@ dependencies {
 
     // navigation
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     // hilt
     implementation(libs.dagger.hilt.core)
@@ -77,7 +89,16 @@ dependencies {
     // lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
+    // splash
+    implementation(libs.androidx.core.splashscreen)
+
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.paging.common)
+    testImplementation(libs.androidx.paging.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

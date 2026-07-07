@@ -1,14 +1,13 @@
 package com.nsergio.dev.myinstagramcompose.features.common
 
-import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryItem
-import com.nsergio.dev.myinstagramcompose.core.ui.components.StoryRing
+import com.nsergio.dev.myinstagramcompose.core.utils.ImageUrlHelper
+import com.nsergio.dev.myinstagramcompose.core.utils.Utils
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.Media
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostId
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.User
 import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.UserId
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 val fakeUsers = mutableListOf<User>()
 
@@ -21,9 +20,25 @@ fun insertUsersWithMedia(numberOfUsers: Int) {
     }
 }
 
+fun createMeUser() {
+
+    val userId = UserId("me")
+
+    val user = createUser(userId)
+
+    val postByUser = getListMedia(user)
+
+    val userWitMedia = user.copy(posts = postByUser)
+
+    if (!fakeUsers.contains(userWitMedia)) {
+        fakeUsers.add(userWitMedia)
+    }
+
+}
+
 fun createUserWithMedia(): User {
 
-    val userId = UserId(System.currentTimeMillis().toString())
+    val userId = UserId(Utils.generateRandomString())
     val user = createUser(userId)
 
     val postByUser = getListMedia(user)
@@ -37,18 +52,19 @@ private fun getListMedia(
 ): List<PostWithMedia> {
     val isRandom = Random.nextBoolean()
     val sizeMedia = if (isRandom) 30 else 100
+    val urlHelper = ImageUrlHelper()
     val postWithMedia = List(sizeMedia) { indexPost ->
         val postId = PostId("post_id_${user.id.value}_$indexPost")
 
         val imageCount = Random.nextInt(1, 6)
         val media = List(imageCount) { indexMedia ->
-            Media(
-                url = "https://picsum.photos/seed/${postId.value}_$indexMedia/1080/1920"
-                //url = "https://picsum.photos/seed/${postId.value}_$indexMedia/600/600"
-            )
+
+            val url = urlHelper.createImageUrl()
+            Media(url = url.url)
         }
 
-        val caption = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut dignissim est. Proin ut nisi ut lacus volutpat mollis quis a odio. Donec et tellus feugiat, efficitur urna ultrices, mattis orci. Nunc augue felis, viverra eget sagittis vel, tristique at lacus."
+        val caption =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut dignissim est. Proin ut nisi ut lacus volutpat mollis quis a odio. Donec et tellus feugiat, efficitur urna ultrices, mattis orci. Nunc augue felis, viverra eget sagittis vel, tristique at lacus."
 
         PostWithMedia(
             id = postId,
@@ -60,7 +76,7 @@ private fun getListMedia(
             likeCount = Random.nextInt(10, 1_000),
             commentCount = Random.nextInt(0, 200),
             shareCount = Random.nextInt(0, 100),
-            createdAt = System.currentTimeMillis() -
+            createdAt = Utils.generateRandomFloat() -
                     Random.nextLong(MILLIS_IN_HOUR, 7 * MILLIS_IN_DAY + 1)
         )
     }
@@ -70,14 +86,10 @@ private fun getListMedia(
 
 fun createUser(userId: UserId): User {
     val isFemale = Random.nextBoolean()
-    val index = Random.nextInt(0..100)
     val userName = FakeNameUser.getFullName(isFemale)
-    val avatarUrl = if (isFemale) {
-        //"https://i.pravatar.cc/150?u=${userId.value}"
-        "https://randomuser.me/api/portraits/women/${index}.jpg"
-    } else {
-        "https://randomuser.me/api/portraits/men/${index}.jpg"
-    }
+    val urlHelper = ImageUrlHelper()
+    val avatarUrl = urlHelper.createRandomUserImageUrl(isFemale)
+
     return User(
         id = userId,
         name = userName.nickName,

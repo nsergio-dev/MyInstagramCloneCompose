@@ -1,22 +1,38 @@
 package com.nsergio.dev.myinstagramcompose.navigation
 
+import kotlinx.serialization.Serializable
+
 /**
  * All top-level routes in the app.
  */
-sealed class AppDestination(val route: String) {
+sealed class AppDestination {
 
-    /** Login screen (start). */
-    object Login : AppDestination("login")
+    //object cause not need arguments required
+    @Serializable
+    object Login
 
-    /** Feed after successful login. */
-    object MainPager  : AppDestination("main_pager")
+    @Serializable
+    object MainPager
 
-    object Profile : AppDestination("profile/{userId}") {
-        fun createRoute(userId: String) = "profile/$userId"
-    }
+    @Serializable
+    data class Profile(val userId: String)
 
-    object PhotoViewer : AppDestination("photo/{postId}/{index}") {
-        fun createRoute(postId: String, index: Int) = "photo/$postId/$index"
-    }
+    @Serializable
+    data class ChatDetail(val userId: String)
+
+    @Serializable
+    object Explore
+
+    @Serializable
+    data class ExploreViewer(val imageUrl: String)
+
+    @Serializable
+    data class PhotoViewer(val postId: String, val index: Int)
+
+    @Serializable
+    object CreatePost
+
+    @Serializable
+    object Reels
 
 }

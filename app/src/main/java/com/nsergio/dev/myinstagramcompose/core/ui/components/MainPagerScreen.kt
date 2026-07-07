@@ -10,15 +10,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.nsergio.dev.myinstagramcompose.features.chat.ui.ChatScreen
+import com.nsergio.dev.myinstagramcompose.features.common.fakeUsers
 import com.nsergio.dev.myinstagramcompose.features.feed.ui.FeedScreen
+import com.nsergio.dev.myinstagramcompose.features.profile.domain.model.UserId
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainPagerScreen(
+    onExploreClick: () -> Unit,
+    onCreatePostClick: () -> Unit,
+    onReelsClick: () -> Unit,
     onClickProfile: (String) -> Unit,
+    onOpenConversation: (String) -> Unit,
     onClickStory: (String) -> Unit
 ) {
+    //create viewModel with hilt for better performance
+    val user = fakeUsers.find { it.id == UserId("me") }
     val pagerState = rememberPagerState(
         initialPage = MainPagerPage.Feed.ordinal,
         pageCount = { MainPagerPage.entries.count() }
@@ -49,6 +57,7 @@ fun MainPagerScreen(
         },
         bottomBar = {
             BottomNavigationBar(
+                avatarUserUrl = user?.avatarUrl.orEmpty(),
                 currentPage = pagerState.currentPage,
                 onSelectedPage = { index ->
                     scope.launch {
@@ -56,6 +65,9 @@ fun MainPagerScreen(
                         pagerState.animateScrollToPage(index)
                     }
                 },
+                onExploreClick = onExploreClick,
+                onCreatePostClick = onCreatePostClick,
+                onReelsClick = onReelsClick,
                 onProfileClick = {
                     onClickProfile.invoke("me")
                 }
@@ -70,6 +82,7 @@ fun MainPagerScreen(
                 page = page,
                 innerPadding = innerPadding,
                 onClickProfile = onClickProfile,
+                onOpenConversation = onOpenConversation,
                 onClickStory = onClickStory,
                 onClickBack = {
                     scope.launch {
@@ -89,6 +102,7 @@ private fun MainPagerController(
     onClickProfile: (String) -> Unit,
     onClickBack: () -> Unit,
     onClickStory: (String) -> Unit,
+    onOpenConversation: (String) -> Unit
 ) {
     when (page) {
 
@@ -101,9 +115,13 @@ private fun MainPagerController(
         )
 
         MainPagerPage.Chat.ordinal -> ChatScreen(
-            username = "jhon_doe",
-            onClickBack = onClickBack,
-            onClickStory = onClickStory
+            contentPadding = innerPadding,
+            onBack = onClickBack,
+            onOpenRequests = { /* TODO: navegar a solicitudes */ },
+            onOpenComposer = { /* TODO: abrir nuevo mensaje */ },
+            onClickStory = onClickStory,
+            onOpenConversation = onOpenConversation,
+            onOpenCamera = { userId -> /* TODO: abrir cámara para ese userId */ }
         )
     }
 }

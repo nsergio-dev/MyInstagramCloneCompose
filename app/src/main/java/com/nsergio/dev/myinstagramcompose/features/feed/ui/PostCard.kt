@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,8 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BookmarkBorder
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -47,13 +45,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import com.nsergio.dev.myinstagramcompose.core.ui.DimensDP
 import com.nsergio.dev.myinstagramcompose.core.ui.components.CircularAvatar
+import com.nsergio.dev.myinstagramcompose.core.ui.components.CommentsButton
 import com.nsergio.dev.myinstagramcompose.core.ui.components.LikeButton
 import com.nsergio.dev.myinstagramcompose.core.ui.components.RemoteAsyncImage
+import com.nsergio.dev.myinstagramcompose.core.ui.components.ShareButton
 import com.nsergio.dev.myinstagramcompose.core.utils.clickableNoRipple
 import com.nsergio.dev.myinstagramcompose.core.utils.relativeTimeString
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.MediaType
 import com.nsergio.dev.myinstagramcompose.features.feed.domain.model.PostWithMedia
 import kotlinx.coroutines.delay
+import kotlin.math.abs
 
 
 /**
@@ -109,6 +110,8 @@ private fun PostImage(
 
     val imageUrl = imageUrls[startIndex]
 
+    var aspect by remember { mutableStateOf(1f) }
+
 
     /* Auto-hide heart after 400 ms */
     if (showHeart) {
@@ -120,7 +123,7 @@ private fun PostImage(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(DimensDP.DP300.dp)
+            .aspectRatio(aspect)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
@@ -135,6 +138,13 @@ private fun PostImage(
             model = imageUrl,
             crossfade = true,
             content = {
+                val size = it.intrinsicSize
+                if (size.width.isFinite() && size.height.isFinite() && size.height > 0f) {
+                    val newAspect = (size.width / size.height)
+                    if (abs(newAspect - aspect) > 0.01f) {
+                        aspect = newAspect
+                    }
+                }
                 Image(
                     contentDescription = null,
                     modifier = Modifier
@@ -224,20 +234,21 @@ private fun PostActions(
         modifier = Modifier
             .fillMaxWidth()
             .padding(DimensDP.DP12.dp),
-        horizontalArrangement = Arrangement.spacedBy(DimensDP.DP16.dp)
+        horizontalArrangement = Arrangement.spacedBy(DimensDP.DP16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        ActionIconText(
+        HorizontalActionIconText(
             icon = {
                 LikeButton(liked = liked, onToggle = onLike)
             },
             text = (likes + if (liked) 1 else 0).toString()
         )
-        ActionIconText(
-            icon = { Icon(Icons.Outlined.ChatBubbleOutline, null) },
+        HorizontalActionIconText(
+            icon = { CommentsButton() },
             text = comments.toString()
         )
-        ActionIconText(
-            icon = { Icon(Icons.Outlined.Send, null) },
+        HorizontalActionIconText(
+            icon = { ShareButton() },
             text = shares.toString()
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -252,7 +263,7 @@ private fun PostActions(
  * @param text Label to display next to the icon
  */
 @Composable
-private fun ActionIconText(
+fun HorizontalActionIconText(
     icon: @Composable () -> Unit,
     text: String
 ) {
@@ -264,13 +275,36 @@ private fun ActionIconText(
 }
 
 /**
+ * Helper composable that shows an icon followed by a label.
+ *
+ * @param icon Icon to display
+ * @param text Label to display next to the icon
+ */
+@Composable
+fun VerticalActionIconText(
+    icon: @Composable () -> Unit,
+    text: String,
+    textColor: Color = Color.Unspecified
+) {
+    Column(
+        modifier = Modifier
+            .padding(end = DimensDP.DP12.dp, bottom = DimensDP.DP24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        icon()
+        Spacer(Modifier.width(DimensDP.DP4.dp))
+        Text(text, style = MaterialTheme.typography.bodySmall, color = textColor)
+    }
+}
+
+/**
  * Caption with “see more” behaviour.
  *
  * @param user Display name of the author
  * @param caption Full caption text
  */
 @Composable
-private fun UserNameAndCaption(
+fun UserNameAndCaption(
     user: String,
     caption: String
 ) {

@@ -8,7 +8,7 @@ package com.nsergio.dev.myinstagramcompose.core.utils
  */
 fun relativeTimeString(
     epochMillis: Long,
-    nowMillis: Long = System.currentTimeMillis()
+    nowMillis: Long = Utils.generateRandomFloat()
 ): String {
     val diff      = nowMillis - epochMillis
     val minute    = 60_000L

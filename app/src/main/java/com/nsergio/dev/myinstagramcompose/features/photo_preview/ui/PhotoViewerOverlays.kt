@@ -35,17 +35,22 @@ fun CaptionAndUserInfo(
     caption: String,
     userName: String,
     userAvatarUrl: String,
+    showBackgroundGradient: Boolean = true
 ) {
     var isExpandedCaption by rememberSaveable { mutableStateOf(false) }
     val maxLines = calculateCaptionMaxLines(expanded = isExpandedCaption)
-
+    var colorBackground = Color.Transparent
+    if (showBackgroundGradient) {
+        colorBackground = Color.Gray.copy(alpha = 0.1f)
+    }
+    Color.Transparent
     Column(
         modifier = modifier
             .padding(
                 start = DimensDP.DP16.dp,
                 end = DimensDP.DP16.dp,
             ).background(
-                Color.Gray.copy(alpha = 0.1f), // Subtle background for better readability
+                colorBackground,
                 shape = MaterialTheme.shapes.small
             )
             .padding(DimensDP.DP8.dp)

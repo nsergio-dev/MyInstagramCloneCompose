@@ -50,7 +50,7 @@ fun PhotoViewerScreen(
 }
 
 @Composable
-private fun PhotoViewerContent(
+fun PhotoViewerContent(
     images: List<String>,
     caption: String,
     authorName: String,
